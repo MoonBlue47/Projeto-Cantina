@@ -46,14 +46,12 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // 1. Criar TipoCliente padrão se não existir
         TipoCliente tipoAluno = tipoClienteRepository.findByNome("Aluno").orElseGet(() -> {
             TipoCliente tc = new TipoCliente();
             tc.setNome("Aluno");
             return tipoClienteRepository.save(tc);
         });
 
-        // 2. Criar Cliente padrão (Matrícula 1001)
         if (clienteRepository.findByMatricula("1001").isEmpty()) {
             Cliente cliente = new Cliente();
             cliente.setNome("Aluno Teste");
@@ -62,7 +60,6 @@ public class DataInitializer implements CommandLineRunner {
             clienteRepository.save(cliente);
         }
 
-        // 3. Criar Funcionário padrão se não existir
         Funcionario funcionario = funcionarioRepository.findAll().stream().findFirst().orElseGet(() -> {
             Funcionario f = new Funcionario();
             f.setNome("Administrador Sistema");
@@ -72,7 +69,6 @@ public class DataInitializer implements CommandLineRunner {
             return funcionarioRepository.save(f);
         });
 
-        // 4. Criar Usuário Admin (login: admin / senha: 123456)
         if (usuarioRepository.findByLogin("admin").isEmpty()) {
             Usuario admin = new Usuario();
             admin.setLogin("admin");
@@ -83,7 +79,6 @@ public class DataInitializer implements CommandLineRunner {
             usuarioRepository.save(admin);
         }
 
-        // 5. Criar Formas de Pagamento padrão se não existirem
         if (formaPagamentoRepository.findAll().isEmpty()) {
             FormaPagamento pix = new FormaPagamento();
             pix.setTipo(FormaPagamento.TipoPagamento.PIX);
@@ -98,7 +93,6 @@ public class DataInitializer implements CommandLineRunner {
             formaPagamentoRepository.save(cartao);
         }
 
-        // 6. Criar Categorias e Produtos padrão se não existirem
         if (categoriaRepository.findAll().isEmpty()) {
             Categoria salgados = new Categoria();
             salgados.setNome("Salgados");
@@ -123,7 +117,6 @@ public class DataInitializer implements CommandLineRunner {
             produtoRepository.save(p2);
         }
 
-        // 7. Inicializar estoque padrão (10 unidades) para produtos sem estoque
         for (Produto p : produtoRepository.findAll()) {
             if (estoqueRepository.findByProdutoId(p.getId()).isEmpty()) {
                 try {

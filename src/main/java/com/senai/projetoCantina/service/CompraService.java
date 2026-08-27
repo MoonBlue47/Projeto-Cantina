@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.senai.projetoCantina.exception.RecursoNaoEncontradoException;
 import com.senai.projetoCantina.model.Compra;
 import com.senai.projetoCantina.repository.CompraRepository;
-import com.senai.projetoCantina.exception.*;
+
 
 @Service
 public class CompraService {
@@ -31,7 +32,7 @@ public class CompraService {
     @Transactional(readOnly = true)
     public Compra buscarPorId(Long id) {
         return compraRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Compra", id));
+                .orElseThrow(() -> new RuntimeException("Compra não encontrada. ID: " + id));
     }
 
     @Transactional

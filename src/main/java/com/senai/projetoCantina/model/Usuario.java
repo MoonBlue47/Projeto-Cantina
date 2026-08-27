@@ -3,6 +3,8 @@ package com.senai.projetoCantina.model;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -11,8 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 
+@Entity
+@Table(name = "usuario")
 public class Usuario {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +30,8 @@ public class Usuario {
     @Column(nullable = false, length = 255)
     private String senha;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('admin','operador') DEFAULT 'operador'")
+    @Convert(converter = PerfilConverter.class)
+    @Column(nullable = false)
     private Perfil perfil = Perfil.OPERADOR;
 
     @Column(name = "ativo", columnDefinition = "TINYINT(1) DEFAULT 1")

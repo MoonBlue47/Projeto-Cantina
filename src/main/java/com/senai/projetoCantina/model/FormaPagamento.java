@@ -12,8 +12,8 @@ public class FormaPagamento {
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 	
-	@Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false, length = 30)
+	@Convert(converter = TipoPagamentoConverter.class)
+    @Column(name = "tipo", nullable = false, length = 50)
     private TipoPagamento tipo;
 
     public FormaPagamento() {

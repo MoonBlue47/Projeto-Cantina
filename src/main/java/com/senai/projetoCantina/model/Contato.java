@@ -36,47 +36,42 @@ public class Contato {
         this.funcionario = funcionario;
         this.cliente = cliente;
     }
-
+    //=============================
     public Long getIdContato() {
         return idContato;
     }
-
     public void setIdContato(Long idContato) {
         this.idContato = idContato;
     }
-
+    //=============================
     public String getTelefone() {
         return telefone;
     }
-
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-
+    //=============================
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
-
+    //=============================
     public Funcionario getFuncionario() {
         return funcionario;
     }
-
     public void setFuncionario(Funcionario funcionario) {
         this.funcionario = funcionario;
     }
-
+    //=============================
     public Cliente getCliente() {
         return cliente;
     }
-
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-
+    //=============================
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -28,16 +28,12 @@ public class EstoqueRestController {
         this.produtoRepository = produtoRepository;
     }
 
-    /** GET /api/estoque — saldo atual de todos os produtos */
     @GetMapping
     public ResponseEntity<List<Estoque>> listarEstoque() {
         return ResponseEntity.ok(estoqueRepository.findAll());
     }
 
-    /**
-     * POST /api/estoque/entrada
-     * Body: { "idProduto": 1, "quantidade": 10, "origem": "Compra #5", "valorUnitario": 3.50 }
-     */
+
     @PostMapping("/entrada")
     public ResponseEntity<?> registrarEntrada(@RequestBody Map<String, Object> body) {
         Number idProduto    = (Number) body.get("idProduto");
@@ -57,10 +53,7 @@ public class EstoqueRestController {
         }
     }
 
-    /**
-     * POST /api/estoque/saida
-     * Body: { "idProduto": 1, "quantidade": 2, "origem": "Venda #10" }
-     */
+
     @PostMapping("/saida")
     public ResponseEntity<?> registrarSaida(@RequestBody Map<String, Object> body) {
         Number idProduto  = (Number) body.get("idProduto");

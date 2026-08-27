@@ -23,11 +23,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    /**
-     * POST /api/auth/login
-     * Body: { "login": "admin", "senha": "123456" }
-     * Retorna 200 com { "sucesso": true, "perfil": "ADMIN" } ou 401
-     */
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String login = body.get("login");
@@ -68,12 +64,7 @@ public class AuthController {
         ));
     }
 
-    /**
-     * POST /api/auth/cadastro
-     * Body: { "login": "admin", "senha": "123456", "perfil": "ADMIN" }
-     * Cria o primeiro usuário admin (sem exigir autenticação prévia).
-     * O hash BCrypt é aplicado automaticamente na senha.
-     */
+
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastro(@RequestBody Map<String, String> body) {
         String login = body.get("login");

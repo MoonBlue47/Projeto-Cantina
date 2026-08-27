@@ -17,10 +17,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    /**
-     * Libera todas as rotas /api/** sem autenticação e configura CORS
-     * para permitir chamadas do front-end (arquivo local ou qualquer origem).
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,7 +31,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+// teste
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

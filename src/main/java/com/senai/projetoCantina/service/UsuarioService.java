@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.senai.projetoCantina.model.Usuario;
 import com.senai.projetoCantina.repository.UsuarioRepository;
 import com.senai.projetoCantina.exception.*;
@@ -34,7 +35,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuario", id));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado. ID: " + id));
     }
 
     @Transactional
