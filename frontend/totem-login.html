@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cantina - Autoatendimento</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="full-screen-center">
+    <div class="card" style="max-width: 500px; width: 100%; padding: 40px;">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: var(--primary-red); font-size: 2.5rem; margin-bottom: 8px;">Bem-vindo!</h1>
+        <p style="color: var(--text-muted);">Por favor, identifique-se para iniciar o pedido.</p>
+      </div>
+
+      <form id="totemLoginForm">
+        <div class="input-group">
+          <label for="nomeAluno">Qual é o seu nome?</label>
+          <input type="text" id="nomeAluno" placeholder="Ex: João Silva" required>
+        </div>
+
+        <div class="input-group">
+          <label for="matriculaAluno">Número da Matrícula</label>
+          <input type="text" id="matriculaAluno" placeholder="Ex: 123456" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 1.2rem; margin-top: 16px;">
+          Começar meu pedido 🍔
+        </button>
+      </form>
+      
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">Voltar para o início</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('totemLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nomeAluno').value;
+      const matricula = document.getElementById('matriculaAluno').value;
+      
+      // Simular validação ou enviar para a API (ex: /api/clientes/validar)
+      // Aqui usamos localStorage para manter a sessão simples no frontend Vanilla
+      localStorage.setItem('cliente_nome', nome);
+      localStorage.setItem('cliente_matricula', matricula);
+      
+      showToast(`Olá, ${nome}! Carregando cardápio...`, 'success');
+      
+      setTimeout(() => {
+        window.location.href = 'totem-menu.html';
+      }, 1500);
+    });
+  </script>
+</body>
+</html>

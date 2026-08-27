@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cantina - Login Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="background-color: var(--light-blue);">
+
+  <div class="full-screen-center">
+    <div class="card" style="max-width: 400px; width: 100%; padding: 40px; box-shadow: var(--shadow-lg);">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: var(--primary-red); font-size: 2rem; margin-bottom: 8px;">Painel de Gestão</h1>
+        <p style="color: var(--text-muted);">Acesso restrito para operadores.</p>
+      </div>
+
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <label for="usuario">Usuário</label>
+          <input type="text" id="usuario" placeholder="Digite seu usuário" required>
+        </div>
+
+        <div class="input-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Digite sua senha" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 16px;">
+          Entrar no Sistema
+        </button>
+      </form>
+      
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">Voltar para o início</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = e.target.querySelector('button');
+      btn.textContent = 'Autenticando...';
+      btn.disabled = true;
+
+      // Simulação de delay
+      setTimeout(() => {
+        window.location.href = 'admin-dashboard.html';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

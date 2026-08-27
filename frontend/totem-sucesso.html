@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cantina - Pedido Concluído</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="full-screen-center">
+    <div class="card" style="max-width: 600px; width: 100%; text-align: center; padding: 48px;">
+      
+      <div style="font-size: 5rem; margin-bottom: 16px;">✅</div>
+      <h1 style="font-size: 2.5rem; margin-bottom: 8px; color: #38A169;">Pedido Confirmado!</h1>
+      <p style="color: var(--text-dark); margin-bottom: 8px; font-size: 1.2rem;">
+        Obrigado, <strong id="sucessoNome" class="text-red"></strong>!
+      </p>
+      <p style="color: var(--text-muted); margin-bottom: 40px;">
+        Seu pedido foi enviado para a cozinha e logo estará pronto para retirada.
+      </p>
+
+      <div style="background-color: var(--bg-app); padding: 24px; border-radius: var(--radius-md); margin-bottom: 32px;">
+        <div style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 8px;">Número do Pedido:</div>
+        <div style="font-size: 3rem; font-weight: 800; color: var(--text-dark); letter-spacing: 4px;" id="numeroPedido">
+          --
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" style="width: 100%; padding: 16px; font-size: 1.1rem;" onclick="window.location.href='index.html'">
+        Fazer novo pedido (Voltar ao Início)
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    const nome = localStorage.getItem('cliente_nome') || 'Aluno';
+    document.getElementById('sucessoNome').textContent = nome;
+    document.getElementById('numeroPedido').textContent = Math.floor(100 + Math.random() * 900);
+    
+    // Limpar sessão
+    setTimeout(() => {
+      localStorage.removeItem('cliente_nome');
+      localStorage.removeItem('cliente_matricula');
+      localStorage.removeItem('cart');
+    }, 1000);
+  </script>
+</body>
+</html>
