@@ -19,19 +19,16 @@ public class FormaPagamentoRestController {
         this.formaPagamentoService = formaPagamentoService;
     }
 
-    /** GET /api/formas-pagamento */
     @GetMapping
     public ResponseEntity<List<FormaPagamentoDto>> listarTodas() {
         return ResponseEntity.ok(formaPagamentoService.findAll());
     }
 
-    /** GET /api/formas-pagamento/{id} */
     @GetMapping("/{id}")
     public ResponseEntity<FormaPagamentoDto> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(formaPagamentoService.findById(id));
     }
 
-    /** POST /api/formas-pagamento — Body: { "tipo": "PIX" } */
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody FormaPagamentoDto dto) {
         try {
@@ -41,7 +38,6 @@ public class FormaPagamentoRestController {
         }
     }
 
-    /** DELETE /api/formas-pagamento/{id} */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         formaPagamentoService.delete(id);

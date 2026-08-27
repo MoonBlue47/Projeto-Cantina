@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.senai.projetoCantina.exception.RecursoNaoEncontradoException;
 import com.senai.projetoCantina.model.Funcionario;
 import com.senai.projetoCantina.repository.FuncionarioRepository;
-import com.senai.projetoCantina.exception.*;
+
 
 @Service
 public class FuncionarioService {
@@ -41,7 +43,7 @@ public class FuncionarioService {
 	@Transactional(readOnly = true)
 	public Funcionario buscarPorId(Long id) {
 		return funcionarioRepository.findById(id)
-				.orElseThrow(() -> new RecursoNaoEncontradoException("Funcionário", id));
+				.orElseThrow(() -> new RuntimeException("Funcionário não encontrado. ID: " + id));
 	}
 
 	@Transactional

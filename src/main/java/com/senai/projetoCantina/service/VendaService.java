@@ -11,14 +11,19 @@ import com.senai.projetoCantina.dto.*;
 import com.senai.projetoCantina.model.*;
 import com.senai.projetoCantina.repository.*;
 
-
 @Service
 public class VendaService {
-	@Autowired
+    @Autowired
     private VendaRepository vendaRepository;
 
     @Autowired
     private FormaPagamentoRepository formaPagamentoRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
+    @Autowired
+    private EstoqueService estoqueService;
 
     @Transactional(readOnly = true)
     public List<VendaResponseDto> findAll() {
@@ -44,7 +49,6 @@ public class VendaService {
 
         BigDecimal totalVenda = BigDecimal.ZERO;
 
-        // Processa os itens da venda e calcula subtotais
         if (dto.getItens() != null) {
             for (ItemVendaDto itemDto : dto.getItens()) {
                 ItemVenda item = new ItemVenda();
@@ -60,7 +64,6 @@ public class VendaService {
 
         venda.setValorTotal(totalVenda);
 
-        // Processa as formas de pagamento vinculadas
         if (dto.getPagamentos() != null) {
             for (VendaPagamentoDto pagDto : dto.getPagamentos()) {
                 FormaPagamento forma = formaPagamentoRepository.findById(pagDto.getIdFormaPagamento())
@@ -75,6 +78,15 @@ public class VendaService {
         }
 
         venda = vendaRepository.save(venda);
+
+        if (dto.getItens() != null) {
+            for (ItemVendaDto itemDto : dto.getItens()) {
+                Produto produto = produtoRepository.findById(itemDto.getIdProduto())
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado. ID: " + itemDto.getIdProduto()));
+                estoqueService.registrarSaida(produto, itemDto.getQuantidade(), "Venda #" + venda.getId());
+            }
+        }
+
         return new VendaResponseDto(venda);
     }
 

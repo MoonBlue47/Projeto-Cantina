@@ -23,13 +23,11 @@ public class CategoriaRestController {
         this.categoriaRepository = categoriaRepository;
     }
 
-    /** GET /api/categorias — lista todas para popular selects no front */
     @GetMapping
     public ResponseEntity<List<Categoria>> listarTodas() {
         return ResponseEntity.ok(categoriaRepository.findAll());
     }
 
-    /** POST /api/categorias — cria nova categoria */
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Categoria categoria) {
         try {
@@ -39,7 +37,6 @@ public class CategoriaRestController {
         }
     }
 
-    /** GET /api/categorias/{id} */
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> buscarPorId(@PathVariable Long id) {
         return categoriaRepository.findById(id)
@@ -47,7 +44,6 @@ public class CategoriaRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** PUT /api/categorias/{id} — atualiza categoria existente */
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Categoria dadosNovos) {
         return categoriaRepository.findById(id)
@@ -59,7 +55,6 @@ public class CategoriaRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /** DELETE /api/categorias/{id} */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         categoriaRepository.deleteById(id);

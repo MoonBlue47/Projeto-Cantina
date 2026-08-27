@@ -48,10 +48,6 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * GET /api/clientes/matricula/{matricula}
-     * Usado pelo totem para validar se a matrícula existe no banco.
-     */
     @GetMapping("/matricula/{matricula}")
     public ResponseEntity<?> buscarPorMatricula(@PathVariable String matricula) {
         Optional<com.senai.projetoCantina.model.Cliente> cliente =
