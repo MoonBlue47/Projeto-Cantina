@@ -16,7 +16,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -31,7 +30,7 @@ public class SecurityConfig {
 
         return http.build();
     }
-// teste
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -48,5 +47,10 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public org.springframework.security.core.userdetails.UserDetailsService userDetailsService() {
+        return new org.springframework.security.provisioning.InMemoryUserDetailsManager();
     }
 }
