@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.senai.projetoCantina.dto.*;
+import com.senai.projetoCantina.exception.RecursoNaoEncontradoException;
 import com.senai.projetoCantina.model.*;
 import com.senai.projetoCantina.repository.*;
 
@@ -35,7 +36,7 @@ public class VendaService {
     @Transactional(readOnly = true)
     public VendaResponseDto findById(Long id) {
         Venda entity = vendaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venda não encontrada. ID: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Venda", id));
         return new VendaResponseDto(entity);
     }
 
@@ -93,9 +94,16 @@ public class VendaService {
     @Transactional
     public VendaResponseDto atualizarStatus(Long id, String novoStatus) {
         Venda venda = vendaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venda não encontrada. ID: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Venda", id));
 
-        venda.setStatus(Venda.StatusVenda.valueOf(novoStatus.toUpperCase()));
+        try {
+            venda.setStatus(Venda.StatusVenda.valueOf(novoStatus.toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                "Status inválido: '" + novoStatus +
+                "'. Valores aceitos: EM_ANDAMENTO, CONCLUIDO, CANCELADO"
+            );
+        }
         venda = vendaRepository.save(venda);
         return new VendaResponseDto(venda);
     }

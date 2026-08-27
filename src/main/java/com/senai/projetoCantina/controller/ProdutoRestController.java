@@ -60,7 +60,6 @@ public class ProdutoRestController {
         return ResponseEntity.ok(result);
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> buscarPorId(@PathVariable Long id) {
         return produtoRepository.findById(id)
@@ -81,7 +80,6 @@ public class ProdutoRestController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-
 
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Map<String, Object> body) {
@@ -115,7 +113,6 @@ public class ProdutoRestController {
         }
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         String nome = (String) body.get("nome");
@@ -142,9 +139,16 @@ public class ProdutoRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    public ResponseEntity<?> excluir(@PathVariable Long id) {
+        if (!produtoRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        if (estoqueRepository.findByProdutoId(id).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("erro",
+                        "Não é possível excluir: produto possui estoque cadastrado. Zere o estoque antes de excluir."));
+        }
         produtoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

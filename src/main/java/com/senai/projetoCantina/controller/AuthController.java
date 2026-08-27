@@ -23,7 +23,6 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String login = body.get("login");
@@ -47,7 +46,18 @@ public class AuthController {
                     .body(Map.of("sucesso", false, "erro", "Usuário inativo"));
         }
 
-        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+        boolean senhaValida = false;
+        try {
+            senhaValida = passwordEncoder.matches(senha, usuario.getSenha());
+        } catch (Exception ignored) {}
+
+        if (!senhaValida && senha.equals(usuario.getSenha())) {
+            senhaValida = true;
+            usuario.setSenha(passwordEncoder.encode(senha));
+            usuarioRepository.save(usuario);
+        }
+
+        if (!senhaValida) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("sucesso", false, "erro", "Senha incorreta"));
         }
@@ -63,7 +73,6 @@ public class AuthController {
                 "nome", nomeExibicao
         ));
     }
-
 
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastro(@RequestBody Map<String, String> body) {

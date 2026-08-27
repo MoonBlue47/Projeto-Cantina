@@ -42,49 +42,55 @@ public class Compra {
         this.funcionario = funcionario;
         this.fornecedor = fornecedor;
     }
-    //=============================
+
     public Long getIdCompra() {
         return idCompra;
     }
+
     public void setIdCompra(Long idCompra) {
         this.idCompra = idCompra;
     }
-    //=============================
+
     public LocalDateTime getDataCompra() {
         return dataCompra;
     }
+
     public void setDataCompra(LocalDateTime dataCompra) {
         this.dataCompra = dataCompra;
     }
-    //=============================
+
     public BigDecimal getValorTotal() {
         return valorTotal;
     }
+
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
-    //=============================
+
     public String getObservacao() {
         return observacao;
     }
+
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-    //=============================
+
     public Funcionario getFuncionario() {
         return funcionario;
     }
+
     public void setFuncionario(Funcionario funcionario) {
         this.funcionario = funcionario;
     }
-    //=============================
+
     public Fornecedor getFornecedor() {
         return fornecedor;
     }
+
     public void setFornecedor(Fornecedor fornecedor) {
         this.fornecedor = fornecedor;
     }
-    //=============================
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

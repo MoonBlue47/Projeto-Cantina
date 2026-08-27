@@ -38,7 +38,14 @@ public class FormaPagamentoService {
         
        
         if (dto.getTipo() != null) {
-            entity.setTipo(FormaPagamento.TipoPagamento.valueOf(dto.getTipo().toUpperCase()));
+            try {
+                entity.setTipo(FormaPagamento.TipoPagamento.valueOf(dto.getTipo().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                    "Tipo de pagamento inválido: '" + dto.getTipo() +
+                    "'. Valores aceitos: DINHEIRO, PIX, CARTAO_DEBITO, CARTAO_CREDITO, VALE_REFEICAO"
+                );
+            }
         }
         
         entity = repository.save(entity);

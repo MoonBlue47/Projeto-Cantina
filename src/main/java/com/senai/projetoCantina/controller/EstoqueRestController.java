@@ -33,7 +33,6 @@ public class EstoqueRestController {
         return ResponseEntity.ok(estoqueRepository.findAll());
     }
 
-
     @PostMapping("/entrada")
     public ResponseEntity<?> registrarEntrada(@RequestBody Map<String, Object> body) {
         Number idProduto    = (Number) body.get("idProduto");
@@ -52,7 +51,6 @@ public class EstoqueRestController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-
 
     @PostMapping("/saida")
     public ResponseEntity<?> registrarSaida(@RequestBody Map<String, Object> body) {

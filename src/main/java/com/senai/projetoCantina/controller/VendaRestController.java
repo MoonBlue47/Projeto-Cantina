@@ -20,18 +20,15 @@ public class VendaRestController {
         this.vendaService = vendaService;
     }
 
-
     @GetMapping
     public ResponseEntity<List<VendaResponseDto>> listarTodas() {
         return ResponseEntity.ok(vendaService.findAll());
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<VendaResponseDto> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(vendaService.findById(id));
     }
-
 
     @PostMapping
     public ResponseEntity<VendaResponseDto> registrar(@RequestBody VendaRequestDto dto) {
@@ -39,7 +36,6 @@ public class VendaRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(venda);
     }
 
-    
     @PutMapping("/{id}/status")
     public ResponseEntity<VendaResponseDto> atualizarStatus(@PathVariable Long id,
                                                              @RequestParam String status) {

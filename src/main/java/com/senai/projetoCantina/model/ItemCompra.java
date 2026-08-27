@@ -41,49 +41,55 @@ public class ItemCompra {
         this.compra = compra;
         this.produto = produto;
     }
-    //=============================
+
     public Long getIdItemCompra() {
         return idItemCompra;
     }
+
     public void setIdItemCompra(Long idItemCompra) {
         this.idItemCompra = idItemCompra;
     }
-    //=============================
+
     public Integer getQuantidade() {
         return quantidade;
     }
+
     public void setQuantidade(Integer quantidade) {
         this.quantidade = quantidade;
     }
-    //=============================
+
     public BigDecimal getPrecoUnitario() {
         return precoUnitario;
     }
+
     public void setPrecoUnitario(BigDecimal precoUnitario) {
         this.precoUnitario = precoUnitario;
     }
-    //=============================
+
     public BigDecimal getSubtotal() {
         return subtotal;
     }
+
     public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
-    //=============================
+
     public Compra getCompra() {
         return compra;
     }
+
     public void setCompra(Compra compra) {
         this.compra = compra;
     }
-    //=============================
+
     public Produto getProduto() {
         return produto;
     }
+
     public void setProduto(Produto produto) {
         this.produto = produto;
     }
-    //=============================
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

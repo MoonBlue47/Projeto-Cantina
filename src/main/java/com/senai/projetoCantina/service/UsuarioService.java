@@ -8,21 +8,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.senai.projetoCantina.model.Usuario;
 import com.senai.projetoCantina.repository.UsuarioRepository;
+
 import com.senai.projetoCantina.exception.*;
+import com.senai.projetoCantina.exception.RecursoNaoEncontradoException;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public Usuario cadastrar(Usuario usuario) {
         if (usuarioRepository.findByLogin(usuario.getLogin()).isPresent()) {
             throw new IllegalStateException("Já existe um usuário cadastrado com esse login");
+        }
+        if (usuario.getSenha() != null && !usuario.getSenha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
         return usuarioRepository.save(usuario);
     }
@@ -35,7 +44,7 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado. ID: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário", id));
     }
 
     @Transactional
@@ -49,7 +58,7 @@ public class UsuarioService {
 
         existente.setLogin(dadosNovos.getLogin());
         if (dadosNovos.getSenha() != null && !dadosNovos.getSenha().isBlank()) {
-            existente.setSenha(dadosNovos.getSenha());
+            existente.setSenha(passwordEncoder.encode(dadosNovos.getSenha()));
         }
         existente.setPerfil(dadosNovos.getPerfil());
         existente.setAtivo(dadosNovos.getAtivo());

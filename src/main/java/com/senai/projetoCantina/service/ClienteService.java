@@ -37,7 +37,7 @@ public class ClienteService {
     @Transactional(readOnly = true)
     public Cliente buscarPorId(Long id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado. ID: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente", id));
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class ClienteService {
                 throw new IllegalStateException("Já existe outro cliente cadastrado com essa matrícula");
             }
         }
-        
+
         existente.setNome(dadosNovos.getNome());
         existente.setMatricula(dadosNovos.getMatricula());
         existente.setIdTipoCliente(dadosNovos.getIdTipoCliente());
