@@ -18,15 +18,17 @@
       <form id="adminLoginForm">
         <div class="input-group">
           <label for="usuario">Usuário</label>
-          <input type="text" id="usuario" placeholder="Digite seu usuário" required>
+          <input type="text" id="usuario" placeholder="Digite seu usuário" required autocomplete="username">
         </div>
 
         <div class="input-group">
           <label for="senha">Senha</label>
-          <input type="password" id="senha" placeholder="Digite sua senha" required>
+          <input type="password" id="senha" placeholder="Digite sua senha" required autocomplete="current-password">
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 16px;">
+        <div id="erroLogin" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
+
+        <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 16px;">
           Entrar no Sistema
         </button>
       </form>
@@ -42,15 +44,40 @@
   <script>
     document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const btn = e.target.querySelector('button');
+
+      const btn = document.getElementById('btnLogin');
+      const erroDiv = document.getElementById('erroLogin');
+      const login = document.getElementById('usuario').value.trim();
+      const senha = document.getElementById('senha').value;
+
       btn.textContent = 'Autenticando...';
       btn.disabled = true;
+      erroDiv.style.display = 'none';
 
-      // Simulação de delay
-      setTimeout(() => {
-        window.location.href = 'admin-dashboard.html';
-      }, 1000);
+      try {
+        const resultado = await apiFetch('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ login, senha })
+        });
+
+        if (resultado.sucesso) {
+          // Salvar sessão no localStorage
+          localStorage.setItem('admin_autenticado', 'true');
+          localStorage.setItem('admin_perfil', resultado.perfil);
+          localStorage.setItem('admin_nome', resultado.nome);
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          erroDiv.textContent = resultado.erro || 'Credenciais inválidas.';
+          erroDiv.style.display = 'block';
+          btn.textContent = 'Entrar no Sistema';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        erroDiv.textContent = 'Usuário ou senha incorretos.';
+        erroDiv.style.display = 'block';
+        btn.textContent = 'Entrar no Sistema';
+        btn.disabled = false;
+      }
     });
   </script>
 </body>

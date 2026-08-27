@@ -542,3 +542,33 @@ ul {
 /* Utilities adicionais */
 .text-red { color: var(--primary-red); }
 .bg-white { background-color: var(--pure-white); }
+
+/* Produtos sem estoque no totem */
+.product-card.out-of-stock {
+  opacity: 0.55;
+  filter: grayscale(80%);
+  cursor: not-allowed;
+}
+
+.product-card.out-of-stock .btn-add {
+  background-color: #cbd5e0 !important;
+  color: #718096 !important;
+  cursor: not-allowed;
+}
+
+.stock-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+.stock-badge.in-stock {
+  background-color: #e6fffa;
+  color: #234e52;
+}
+.stock-badge.out-of-stock-badge {
+  background-color: #fed7d7;
+  color: #9b2c2c;
+}

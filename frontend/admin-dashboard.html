@@ -10,22 +10,28 @@
 
   <div class="admin-layout">
     
-    <!-- Sidebar Azul Clarinho -->
+    <!-- Sidebar -->
     <aside class="admin-sidebar">
       <div class="logo logo-text" style="font-size: 1.8rem; text-align: center;">
         Cantina Admin
       </div>
+      <div style="text-align:center; font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;" id="adminNomeExibicao"></div>
       
       <nav class="admin-nav" id="sidebarNav">
-        <div class="nav-item active" data-view="pdv">🛒 Frente de Caixa</div>
-        <div class="nav-item" data-view="produtos">📦 Gestão de Produtos</div>
+        <div class="nav-item active" data-view="pedidos">📋 Pedidos</div>
+        <div class="nav-item" data-view="produtos">📦 Produtos</div>
+        <div class="nav-item" data-view="categorias">🏷️ Categorias</div>
         <div class="nav-item" data-view="clientes">👥 Clientes</div>
-        <div class="nav-item" data-view="compras">🚚 Compras e Fornecedores</div>
+        <div class="nav-item" data-view="tipoCliente">🗂️ Tipo de Cliente</div>
+        <div class="nav-item" data-view="funcionarios">👤 Funcionários</div>
+        <div class="nav-item" data-view="fornecedores">🚚 Fornecedores</div>
+        <div class="nav-item" data-view="pagamentos">💳 Formas de Pagamento</div>
+        <div class="nav-item" data-view="estoque">📊 Estoque</div>
         <div class="nav-item" data-view="usuarios">🔐 Usuários</div>
       </nav>
 
       <div style="margin-top: auto;">
-        <button class="btn btn-secondary" style="width: 100%; background: var(--pure-white);" onclick="window.location.href='index.html'">
+        <button class="btn btn-secondary" style="width:100%; background:var(--pure-white);" onclick="fazerLogout()">
           Sair do Sistema
         </button>
       </div>
@@ -33,94 +39,310 @@
 
     <!-- Conteúdo Principal -->
     <main class="admin-content">
-      
-      <!-- View: PDV -->
-      <section id="view-pdv" class="view-section">
-        <div class="page-header">
-          <h1>Frente de Caixa Rápida</h1>
-        </div>
-        <div class="card" style="text-align: center; padding: 60px; color: var(--text-muted);">
-          <div style="font-size: 4rem; margin-bottom: 16px;">💻</div>
-          <h2>Módulo de Lançamento em Construção</h2>
-          <p>O foco atual de pedidos é o Totem de Autoatendimento.</p>
-        </div>
-      </section>
 
-      <!-- View: Produtos -->
-      <section id="view-produtos" class="view-section" style="display: none;">
+      <!-- ── PEDIDOS ─────────────────────────────────────────────────── -->
+      <section id="view-pedidos" class="view-section">
         <div class="page-header">
-          <h1>Gestão de Produtos</h1>
-          <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+          <h1>Pedidos do Totem</h1>
+          <button class="btn btn-secondary" onclick="loadPedidos()">🔄 Atualizar</button>
         </div>
-        
         <div class="data-table-container">
           <table class="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Categoria</th>
-                <th>Preço</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabelaProdutos">
-              <!-- JS renderiza aqui -->
-            </tbody>
+            <thead><tr><th>#</th><th>Data/Hora</th><th>Cliente</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaPedidos"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- View: Clientes, Compras, Usuarios (Placeholders) -->
-      <section id="view-clientes" class="view-section" style="display: none;">
+      <!-- ── PRODUTOS ────────────────────────────────────────────────── -->
+      <section id="view-produtos" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Gestão de Produtos</h1>
+          <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>Categoria</th><th>Preço</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaProdutos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── CATEGORIAS ──────────────────────────────────────────────── -->
+      <section id="view-categorias" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Categorias</h1>
+          <button class="btn btn-primary" onclick="abrirModalCategoria()">+ Nova Categoria</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>Descrição</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaCategorias"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── CLIENTES ────────────────────────────────────────────────── -->
+      <section id="view-clientes" class="view-section" style="display:none;">
         <div class="page-header">
           <h1>Clientes</h1>
+          <button class="btn btn-primary" onclick="abrirModalCliente()">+ Novo Cliente</button>
         </div>
-        <div class="card"><p>Listagem de clientes aparecerá aqui.</p></div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>Matrícula</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaClientes"></tbody>
+          </table>
+        </div>
       </section>
 
-      <section id="view-compras" class="view-section" style="display: none;">
+      <!-- ── TIPO DE CLIENTE ─────────────────────────────────────────── -->
+      <section id="view-tipoCliente" class="view-section" style="display:none;">
         <div class="page-header">
-          <h1>Compras e Fornecedores</h1>
+          <h1>Tipos de Cliente</h1>
+          <button class="btn btn-primary" onclick="abrirModal('modalTipoCliente')">+ Novo Tipo</button>
         </div>
-        <div class="card"><p>Controle de entrada de estoque.</p></div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaTiposCliente"></tbody>
+          </table>
+        </div>
       </section>
 
-      <section id="view-usuarios" class="view-section" style="display: none;">
+      <!-- ── FUNCIONÁRIOS ────────────────────────────────────────────── -->
+      <section id="view-funcionarios" class="view-section" style="display:none;">
         <div class="page-header">
-          <h1>Usuários</h1>
+          <h1>Funcionários</h1>
+          <button class="btn btn-primary" onclick="abrirModal('modalFuncionario')">+ Novo Funcionário</button>
         </div>
-        <div class="card"><p>Gerenciamento de acessos do sistema.</p></div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Cargo</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaFuncionarios"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── FORNECEDORES ────────────────────────────────────────────── -->
+      <section id="view-fornecedores" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Fornecedores</h1>
+          <button class="btn btn-primary" onclick="abrirModal('modalFornecedor')">+ Novo Fornecedor</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Nome</th><th>CNPJ</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaFornecedores"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── FORMAS DE PAGAMENTO ─────────────────────────────────────── -->
+      <section id="view-pagamentos" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Formas de Pagamento</h1>
+          <button class="btn btn-primary" onclick="abrirModal('modalPagamento')">+ Nova Forma</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Tipo</th><th>Ações</th></tr></thead>
+            <tbody id="tabelaPagamentos"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── ESTOQUE ─────────────────────────────────────────────────── -->
+      <section id="view-estoque" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Controle de Estoque</h1>
+          <button class="btn btn-primary" onclick="abrirModalEntradaEstoque()">📥 Entrada de Estoque</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>Produto</th><th>Quantidade</th><th>Valor Unit.</th><th>Total</th></tr></thead>
+            <tbody id="tabelaEstoque"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── USUÁRIOS ────────────────────────────────────────────────── -->
+      <section id="view-usuarios" class="view-section" style="display:none;">
+        <div class="page-header">
+          <h1>Usuários do Sistema</h1>
+          <button class="btn btn-primary" onclick="abrirModal('modalUsuario')">+ Novo Usuário</button>
+        </div>
+        <div class="data-table-container">
+          <table class="data-table">
+            <thead><tr><th>ID</th><th>Login</th><th>Perfil</th><th>Status</th></tr></thead>
+            <tbody id="tabelaUsuarios"></tbody>
+          </table>
+        </div>
       </section>
 
     </main>
   </div>
 
-  <!-- Modal Cadastro Produto -->
+  <!-- ═══════════════════ MODAIS ════════════════════════════════════ -->
+
+  <!-- Modal: Produto -->
   <div class="modal-overlay" id="modalProduto">
     <div class="modal-content">
-      <h2 style="margin-bottom: 24px;">Cadastrar Produto</h2>
+      <h2 style="margin-bottom:24px;" id="modalProdutoTitle">Cadastrar Produto</h2>
       <form id="formProduto">
-        <div class="input-group">
-          <label>Nome do Produto</label>
-          <input type="text" id="prodNome" required>
+        <input type="hidden" id="prodId">
+        <div class="input-group"><label>Nome do Produto</label><input type="text" id="prodNome" required></div>
+        <div class="input-group"><label>Categoria</label>
+          <select id="prodCat" required><option value="">Selecione...</option></select>
         </div>
+        <div class="input-group"><label>Preço (R$)</label><input type="number" step="0.01" id="prodPreco" required></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalProduto')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Categoria -->
+  <div class="modal-overlay" id="modalCategoria">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;" id="modalCategoriaTitle">Nova Categoria</h2>
+      <form id="formCategoria">
+        <input type="hidden" id="catId">
+        <div class="input-group"><label>Nome</label><input type="text" id="catNome" required></div>
+        <div class="input-group"><label>Descrição</label><input type="text" id="catDesc"></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalCategoria')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Cliente -->
+  <div class="modal-overlay" id="modalCliente">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Cadastrar Cliente</h2>
+      <form id="formCliente">
+        <div class="input-group"><label>Nome Completo</label><input type="text" id="clienteNome" required></div>
+        <div class="input-group"><label>Matrícula</label><input type="text" id="clienteMatricula" required></div>
+        <div class="input-group"><label>Tipo de Cliente</label>
+          <select id="clienteTipo" required><option value="">Selecione...</option></select>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalCliente')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tipo de Cliente -->
+  <div class="modal-overlay" id="modalTipoCliente">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Novo Tipo de Cliente</h2>
+      <form id="formTipoCliente">
+        <div class="input-group"><label>Nome (ex: Aluno, Professor)</label><input type="text" id="tipoClienteNome" required></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalTipoCliente')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Funcionário -->
+  <div class="modal-overlay" id="modalFuncionario">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Cadastrar Funcionário</h2>
+      <form id="formFuncionario">
+        <div class="input-group"><label>Nome</label><input type="text" id="funcNome" required></div>
+        <div class="input-group"><label>CPF</label><input type="text" id="funcCpf" placeholder="000.000.000-00" required></div>
+        <div class="input-group"><label>Cargo</label><input type="text" id="funcCargo" required></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalFuncionario')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Fornecedor -->
+  <div class="modal-overlay" id="modalFornecedor">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Cadastrar Fornecedor</h2>
+      <form id="formFornecedor">
+        <div class="input-group"><label>Nome / Razão Social</label><input type="text" id="fornNome" required></div>
+        <div class="input-group"><label>CNPJ</label><input type="text" id="fornCnpj" placeholder="00.000.000/0001-00" required></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalFornecedor')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Forma de Pagamento -->
+  <div class="modal-overlay" id="modalPagamento">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Nova Forma de Pagamento</h2>
+      <form id="formPagamento">
         <div class="input-group">
-          <label>Categoria</label>
-          <select id="prodCat">
-            <option>Salgados</option>
-            <option>Bebidas</option>
-            <option>Saudáveis</option>
-            <option>Doces</option>
+          <label>Tipo</label>
+          <select id="pagTipo" required>
+            <option value="">Selecione...</option>
+            <option value="DINHEIRO">Dinheiro</option>
+            <option value="PIX">Pix</option>
+            <option value="CARTAO_DEBITO">Cartão de Débito</option>
+            <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+            <option value="VALE_REFEICAO">Vale Refeição</option>
           </select>
         </div>
-        <div class="input-group">
-          <label>Preço (R$)</label>
-          <input type="number" step="0.01" id="prodPreco" required>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalPagamento')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
         </div>
-        <div style="display: flex; gap: 16px; margin-top: 32px;">
-          <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="fecharModalProduto()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" style="flex: 1;">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Entrada de Estoque -->
+  <div class="modal-overlay" id="modalEntradaEstoque">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">📥 Entrada de Estoque</h2>
+      <form id="formEntradaEstoque">
+        <div class="input-group"><label>Produto</label>
+          <select id="estoqueProduto" required><option value="">Selecione...</option></select>
+        </div>
+        <div class="input-group"><label>Quantidade</label><input type="number" id="estoqueQtd" min="1" required></div>
+        <div class="input-group"><label>Origem (ex: Compra de Fornecedor)</label><input type="text" id="estoqueOrigem" required></div>
+        <div class="input-group"><label>Valor Unitário (R$)</label><input type="number" step="0.01" id="estoqueValor" required></div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalEntradaEstoque')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Usuário -->
+  <div class="modal-overlay" id="modalUsuario">
+    <div class="modal-content">
+      <h2 style="margin-bottom:24px;">Cadastrar Usuário</h2>
+      <form id="formUsuario">
+        <div class="input-group"><label>Login</label><input type="text" id="usuLogin" required autocomplete="off"></div>
+        <div class="input-group"><label>Senha</label><input type="password" id="usuSenha" required autocomplete="new-password"></div>
+        <div class="input-group">
+          <label>Perfil</label>
+          <select id="usuPerfil">
+            <option value="OPERADOR">Operador</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:16px; margin-top:24px;">
+          <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalUsuario')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
         </div>
       </form>
     </div>
