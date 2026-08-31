@@ -10,6 +10,7 @@ public class FormaPagamento {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@Column(name = "id_forma_pagamento")
     private Long id;
 	
 	@Convert(converter = TipoPagamentoConverter.class)

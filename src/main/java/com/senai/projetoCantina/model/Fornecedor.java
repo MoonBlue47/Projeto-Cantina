@@ -20,6 +20,7 @@ public class Fornecedor {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_fornecedor")
 	private Long id;
 
 	@NotBlank(message = "Nome é obrigatório")
