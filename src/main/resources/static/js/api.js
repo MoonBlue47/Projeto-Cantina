@@ -1,12 +1,4 @@
-const BASE_URL = '/api';
-
-// Utilitário para prevenir XSS
-function escapeHtml(str) {
-  if (str == null) return '';
-  const div = document.createElement('div');
-  div.textContent = String(str);
-  return div.innerHTML;
-}
+const BASE_URL = 'http://localhost:8080/api';
 
 // Funções de Utilitário Global
 function showToast(message, type = 'info') {
@@ -22,7 +14,7 @@ function showToast(message, type = 'info') {
 
   toast.innerHTML = `
     <span style="font-size: 1.5rem;">${icon}</span>
-    <div style="font-weight: 600;">${escapeHtml(message)}</div>
+    <div style="font-weight: 600;">${message}</div>
   `;
 
   container.appendChild(toast);
@@ -68,4 +60,3 @@ async function apiFetch(endpoint, options = {}) {
 
 window.apiFetch = apiFetch;
 window.showToast = showToast;
-window.escapeHtml = escapeHtml;

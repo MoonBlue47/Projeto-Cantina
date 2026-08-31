@@ -42,7 +42,7 @@
     const nome = localStorage.getItem('cliente_nome') || 'Aluno';
     const idPedido = localStorage.getItem('ultimo_pedido_id');
     document.getElementById('sucessoNome').textContent = nome;
-    document.getElementById('numeroPedido').textContent = idPedido ? `#${idPedido}` : 'Registrado';
+    document.getElementById('numeroPedido').textContent = idPedido ? `#${idPedido}` : Math.floor(100 + Math.random() * 900);
 
     // Limpar sessão
     setTimeout(() => {

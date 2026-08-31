@@ -118,8 +118,8 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="product-img-placeholder">${icon}</div>
-      <div class="product-name">${escapeHtml(product.nome)}</div>
-      <div class="product-desc">${escapeHtml(product.descricao || product.categoria)}</div>
+      <div class="product-name">${product.nome}</div>
+      <div class="product-desc">${product.descricao || product.categoria}</div>
       ${badgeHtml}
       <div class="product-price">R$ ${Number(product.preco).toFixed(2).replace('.', ',')}</div>
       ${buttonHtml}
@@ -187,7 +187,7 @@ function renderCart() {
     cartItem.className = 'cart-item';
     cartItem.innerHTML = `
       <div class="cart-item-info">
-        <h4>${escapeHtml(item.nome)}</h4>
+        <h4>${item.nome}</h4>
         <div class="cart-item-price">R$ ${Number(item.preco).toFixed(2).replace('.', ',')} (x${item.quantidade})</div>
       </div>
       <div class="cart-item-actions">

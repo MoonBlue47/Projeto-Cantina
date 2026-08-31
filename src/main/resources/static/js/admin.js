@@ -82,7 +82,7 @@ async function loadPedidos() {
       <td>${v.dataVenda ? new Date(v.dataVenda).toLocaleString('pt-BR') : '-'}</td>
       <td>${v.idCliente ? 'Cliente #' + v.idCliente : 'Totem'}</td>
       <td style="color:var(--primary-red); font-weight:bold;">R$ ${Number(v.valorTotal).toFixed(2).replace('.',',')}</td>
-      <td><span class="status-badge status-${(v.status||'').replace(' ','-')}">${escapeHtml(v.status || '-')}</span></td>
+      <td><span class="status-badge status-${(v.status||'').replace(' ','-')}">${v.status || '-'}</span></td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;" 
           onclick="atualizarStatusVenda(${v.id}, 'CONCLUIDO')">✅ Concluir</button>
@@ -109,8 +109,8 @@ async function loadProdutos() {
     listaProdutosMemoria = await window.apiFetch('/produtos');
     criarTabela('tabelaProdutos', 5, listaProdutosMemoria, p => `
       <td style="font-weight:600;">#${p.id}</td>
-      <td>${escapeHtml(p.nome)}</td>
-      <td><span style="background:var(--light-blue); padding:4px 12px; border-radius:12px; font-size:0.8rem; font-weight:bold;">${escapeHtml(p.categoria)}</span></td>
+      <td>${p.nome}</td>
+      <td><span style="background:var(--light-blue); padding:4px 12px; border-radius:12px; font-size:0.8rem; font-weight:bold;">${p.categoria}</span></td>
       <td style="color:var(--primary-red); font-weight:bold;">R$ ${Number(p.preco).toFixed(2).replace('.',',')}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem; margin-right:6px;"
@@ -195,8 +195,8 @@ async function loadCategorias() {
     listaCategoriasMemoria = await window.apiFetch('/categorias');
     criarTabela('tabelaCategorias', 4, listaCategoriasMemoria, c => `
       <td style="font-weight:600;">#${c.id}</td>
-      <td>${escapeHtml(c.nome)}</td>
-      <td>${escapeHtml(c.descricao || '-')}</td>
+      <td>${c.nome}</td>
+      <td>${c.descricao || '-'}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem; margin-right:6px;"
           onclick="editarCategoria(${c.id})">✏️ Editar</button>
@@ -266,8 +266,8 @@ async function loadClientes() {
     const clientes = await window.apiFetch('/clientes');
     criarTabela('tabelaClientes', 4, clientes, c => `
       <td style="font-weight:600;">#${c.id}</td>
-      <td>${escapeHtml(c.nome)}</td>
-      <td>${escapeHtml(c.matricula)}</td>
+      <td>${c.nome}</td>
+      <td>${c.matricula}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
           onclick="excluirCliente(${c.id})">🗑</button>
@@ -322,7 +322,7 @@ async function loadTiposCliente() {
     const tipos = await window.apiFetch('/tipos-cliente');
     criarTabela('tabelaTiposCliente', 3, tipos, t => `
       <td style="font-weight:600;">#${t.id}</td>
-      <td>${escapeHtml(t.nome)}</td>
+      <td>${t.nome}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
           onclick="excluirTipoCliente(${t.id})">🗑</button>
@@ -365,9 +365,9 @@ async function loadFuncionarios() {
     const funcs = await window.apiFetch('/funcionarios');
     criarTabela('tabelaFuncionarios', 5, funcs, f => `
       <td style="font-weight:600;">#${f.id}</td>
-      <td>${escapeHtml(f.nome)}</td>
-      <td>${escapeHtml(f.cpf)}</td>
-      <td>${escapeHtml(f.cargo)}</td>
+      <td>${f.nome}</td>
+      <td>${f.cpf}</td>
+      <td>${f.cargo}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
           onclick="excluirFuncionario(${f.id})">🗑</button>
@@ -412,8 +412,8 @@ async function loadFornecedores() {
     const forn = await window.apiFetch('/fornecedores');
     criarTabela('tabelaFornecedores', 4, forn, f => `
       <td style="font-weight:600;">#${f.id}</td>
-      <td>${escapeHtml(f.nome)}</td>
-      <td>${escapeHtml(f.cnpj)}</td>
+      <td>${f.nome}</td>
+      <td>${f.cnpj}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
           onclick="excluirFornecedor(${f.id})">🗑</button>
@@ -457,7 +457,7 @@ async function loadFormasPagamento() {
     const fps = await window.apiFetch('/formas-pagamento');
     criarTabela('tabelaPagamentos', 3, fps, fp => `
       <td style="font-weight:600;">#${fp.id}</td>
-      <td>${escapeHtml(fp.tipo)}</td>
+      <td>${fp.tipo}</td>
       <td>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
           onclick="excluirFormaPagamento(${fp.id})">🗑</button>
@@ -499,7 +499,7 @@ async function loadEstoque() {
   try {
     const estoque = await window.apiFetch('/estoque');
     criarTabela('tabelaEstoque', 4, estoque, e => `
-      <td>${e.produto ? escapeHtml(e.produto.nome) : '#' + e.id}</td>
+      <td>${e.produto ? e.produto.nome : '#' + e.id}</td>
       <td style="font-weight:bold; color: ${e.quantidade <= 5 ? '#e53e3e' : 'inherit'};">
         ${e.quantidade}
       </td>
@@ -547,8 +547,8 @@ async function loadUsuarios() {
     const usuarios = await window.apiFetch('/usuarios');
     criarTabela('tabelaUsuarios', 4, usuarios, u => `
       <td style="font-weight:600;">#${u.id}</td>
-      <td>${escapeHtml(u.login)}</td>
-      <td>${escapeHtml(u.perfil)}</td>
+      <td>${u.login}</td>
+      <td>${u.perfil}</td>
       <td>${u.ativo ? '✅ Ativo' : '❌ Inativo'}</td>
     `);
   } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
