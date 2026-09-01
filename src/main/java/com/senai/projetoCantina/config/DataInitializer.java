@@ -52,6 +52,18 @@ public class DataInitializer implements CommandLineRunner {
             return tipoClienteRepository.save(tc);
         });
 
+        tipoClienteRepository.findByNome("Professor").orElseGet(() -> {
+            TipoCliente tc = new TipoCliente();
+            tc.setNome("Professor");
+            return tipoClienteRepository.save(tc);
+        });
+
+        tipoClienteRepository.findByNome("Funcionário").orElseGet(() -> {
+            TipoCliente tc = new TipoCliente();
+            tc.setNome("Funcionário");
+            return tipoClienteRepository.save(tc);
+        });
+
         if (clienteRepository.findByMatricula("1001").isEmpty()) {
             Cliente cliente = new Cliente();
             cliente.setNome("Aluno Teste");

@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.senai.projetoCantina.model.Usuario;
+import com.senai.projetoCantina.repository.FuncionarioRepository;
 import com.senai.projetoCantina.repository.UsuarioRepository;
 
 @RestController
@@ -16,10 +17,14 @@ import com.senai.projetoCantina.repository.UsuarioRepository;
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final FuncionarioRepository funcionarioRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UsuarioRepository usuarioRepository,
+                          FuncionarioRepository funcionarioRepository,
+                          PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.funcionarioRepository = funcionarioRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -79,6 +84,7 @@ public class AuthController {
         String login = body.get("login");
         String senha = body.get("senha");
         String perfilStr = body.getOrDefault("perfil", "OPERADOR");
+        String idFuncionarioStr = body.get("idFuncionario");
 
         if (login == null || senha == null) {
             return ResponseEntity.badRequest().body(Map.of("erro", "Login e senha são obrigatórios"));
@@ -95,9 +101,21 @@ public class AuthController {
         usuario.setPerfil(Usuario.Perfil.valueOf(perfilStr.toUpperCase()));
         usuario.setAtivo(true);
 
+        // Vincular ao funcionário, se informado
+        if (idFuncionarioStr != null && !idFuncionarioStr.isBlank()) {
+            try {
+                Long idFuncionario = Long.parseLong(idFuncionarioStr);
+                com.senai.projetoCantina.model.Funcionario funcionario =
+                        funcionarioRepository.findById(idFuncionario).orElse(null);
+                if (funcionario != null) {
+                    usuario.setFuncionario(funcionario);
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+
         usuarioRepository.save(usuario);
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("sucesso", true, "mensagem", "Usuário criado com sucesso. Faça login."));
+                .body(Map.of("sucesso", true, "mensagem", "Usuário criado com sucesso."));
     }
 }

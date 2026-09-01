@@ -90,7 +90,7 @@
         </div>
         <div class="data-table-container">
           <table class="data-table">
-            <thead><tr><th>ID</th><th>Nome</th><th>Matrícula</th><th>Ações</th></tr></thead>
+            <thead><tr><th>ID</th><th>Nome</th><th>Matrícula</th><th>Tipo</th><th>Ações</th></tr></thead>
             <tbody id="tabelaClientes"></tbody>
           </table>
         </div>
@@ -114,11 +114,11 @@
       <section id="view-funcionarios" class="view-section" style="display:none;">
         <div class="page-header">
           <h1>Funcionários</h1>
-          <button class="btn btn-primary" onclick="abrirModal('modalFuncionario')">+ Novo Funcionário</button>
+          <button class="btn btn-primary" onclick="abrirModalFuncionario()">+ Novo Funcionário</button>
         </div>
         <div class="data-table-container">
           <table class="data-table">
-            <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Cargo</th><th>Ações</th></tr></thead>
+            <thead><tr><th>ID</th><th>Nome</th><th>CPF</th><th>Cargo</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody id="tabelaFuncionarios"></tbody>
           </table>
         </div>
@@ -170,11 +170,11 @@
       <section id="view-usuarios" class="view-section" style="display:none;">
         <div class="page-header">
           <h1>Usuários do Sistema</h1>
-          <button class="btn btn-primary" onclick="abrirModal('modalUsuario')">+ Novo Usuário</button>
+          <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Novo Usuário</button>
         </div>
         <div class="data-table-container">
           <table class="data-table">
-            <thead><tr><th>ID</th><th>Login</th><th>Perfil</th><th>Status</th></tr></thead>
+            <thead><tr><th>ID</th><th>Login</th><th>Perfil</th><th>Funcionário</th><th>Status</th><th>Ações</th></tr></thead>
             <tbody id="tabelaUsuarios"></tbody>
           </table>
         </div>
@@ -223,8 +223,9 @@
   <!-- Modal: Cliente -->
   <div class="modal-overlay" id="modalCliente">
     <div class="modal-content">
-      <h2 style="margin-bottom:24px;">Cadastrar Cliente</h2>
+      <h2 style="margin-bottom:24px;" id="modalClienteTitle">Cadastrar Cliente</h2>
       <form id="formCliente">
+        <input type="hidden" id="clienteId">
         <div class="input-group"><label>Nome Completo</label><input type="text" id="clienteNome" required></div>
         <div class="input-group"><label>Matrícula</label><input type="text" id="clienteMatricula" required></div>
         <div class="input-group"><label>Tipo de Cliente</label>
@@ -255,11 +256,24 @@
   <!-- Modal: Funcionário -->
   <div class="modal-overlay" id="modalFuncionario">
     <div class="modal-content">
-      <h2 style="margin-bottom:24px;">Cadastrar Funcionário</h2>
+      <h2 style="margin-bottom:24px;" id="modalFuncionarioTitle">Cadastrar Funcionário</h2>
       <form id="formFuncionario">
+        <input type="hidden" id="funcId">
         <div class="input-group"><label>Nome</label><input type="text" id="funcNome" required></div>
         <div class="input-group"><label>CPF</label><input type="text" id="funcCpf" placeholder="000.000.000-00" required></div>
         <div class="input-group"><label>Cargo</label><input type="text" id="funcCargo" required></div>
+
+        <hr style="border:none; border-top:1px dashed #edf2f7; margin:24px 0 16px;">
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">🔐 Criar acesso ao sistema (opcional)</p>
+        <div class="input-group"><label>Login</label><input type="text" id="funcLogin" placeholder="Deixe vazio se não quiser criar acesso" autocomplete="off"></div>
+        <div class="input-group"><label>Senha</label><input type="password" id="funcSenha" placeholder="Deixe vazio se não quiser criar acesso" autocomplete="new-password"></div>
+        <div class="input-group"><label>Perfil de Acesso</label>
+          <select id="funcPerfil">
+            <option value="OPERADOR">Operador</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+
         <div style="display:flex; gap:16px; margin-top:24px;">
           <button type="button" class="btn btn-secondary" style="flex:1;" onclick="fecharModal('modalFuncionario')">Cancelar</button>
           <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
@@ -329,7 +343,7 @@
   <!-- Modal: Usuário -->
   <div class="modal-overlay" id="modalUsuario">
     <div class="modal-content">
-      <h2 style="margin-bottom:24px;">Cadastrar Usuário</h2>
+      <h2 style="margin-bottom:24px;" id="modalUsuarioTitle">Cadastrar Usuário</h2>
       <form id="formUsuario">
         <div class="input-group"><label>Login</label><input type="text" id="usuLogin" required autocomplete="off"></div>
         <div class="input-group"><label>Senha</label><input type="password" id="usuSenha" required autocomplete="new-password"></div>
@@ -338,6 +352,12 @@
           <select id="usuPerfil">
             <option value="OPERADOR">Operador</option>
             <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Vincular a Funcionário (opcional)</label>
+          <select id="usuFuncionario">
+            <option value="">Nenhum (sem vínculo)</option>
           </select>
         </div>
         <div style="display:flex; gap:16px; margin-top:24px;">

@@ -261,22 +261,42 @@ window.excluirCategoria = async function(id) {
 };
 
 // ─── CLIENTES ─────────────────────────────────────────────────────────────────
+let listaClientesMemoria = [];
+let mapaTiposCliente = {};
+
 async function loadClientes() {
   try {
-    const clientes = await window.apiFetch('/clientes');
-    criarTabela('tabelaClientes', 4, clientes, c => `
-      <td style="font-weight:600;">#${c.id}</td>
-      <td>${c.nome}</td>
-      <td>${c.matricula}</td>
-      <td>
-        <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
-          onclick="excluirCliente(${c.id})">🗑</button>
-      </td>
-    `);
+    const [clientes, tipos] = await Promise.all([
+      window.apiFetch('/clientes'),
+      window.apiFetch('/tipos-cliente')
+    ]);
+    listaClientesMemoria = clientes;
+    mapaTiposCliente = {};
+    tipos.forEach(t => { mapaTiposCliente[t.id] = t.nome; });
+
+    criarTabela('tabelaClientes', 5, clientes, c => {
+      const tipoNome = mapaTiposCliente[c.idTipoCliente] || '-';
+      return `
+        <td style="font-weight:600;">#${c.id}</td>
+        <td>${c.nome}</td>
+        <td>${c.matricula}</td>
+        <td><span style="background:var(--light-blue); padding:4px 12px; border-radius:12px; font-size:0.8rem; font-weight:bold;">${tipoNome}</span></td>
+        <td>
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem; margin-right:6px;"
+            onclick="editarCliente(${c.id})">✏️ Editar</button>
+          <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
+            onclick="excluirCliente(${c.id})">🗑 Excluir</button>
+        </td>
+      `;
+    });
   } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
 }
 
 window.abrirModalCliente = async function() {
+  document.getElementById('clienteId').value = '';
+  document.getElementById('modalClienteTitle').textContent = 'Cadastrar Cliente';
+  const form = document.querySelector('#modalCliente form');
+  if (form) form.reset();
   try {
     const tipos = await window.apiFetch('/tipos-cliente');
     const sel = document.getElementById('clienteTipo');
@@ -286,20 +306,39 @@ window.abrirModalCliente = async function() {
   abrirModal('modalCliente');
 };
 
+window.editarCliente = async function(id) {
+  await window.abrirModalCliente();
+  const cliente = listaClientesMemoria.find(c => c.id === id);
+  if (cliente) {
+    document.getElementById('clienteId').value = cliente.id;
+    document.getElementById('clienteNome').value = cliente.nome;
+    document.getElementById('clienteMatricula').value = cliente.matricula;
+    if (cliente.idTipoCliente) {
+      document.getElementById('clienteTipo').value = cliente.idTipoCliente;
+    }
+    document.getElementById('modalClienteTitle').textContent = 'Editar Cliente';
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const formCliente = document.getElementById('formCliente');
   if (formCliente) {
     formCliente.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const id = document.getElementById('clienteId').value;
       const nome = document.getElementById('clienteNome').value;
       const matricula = document.getElementById('clienteMatricula').value;
       const idTipoCliente = Number(document.getElementById('clienteTipo').value);
+
+      const endpoint = id ? `/clientes/${id}` : '/clientes';
+      const method = id ? 'PUT' : 'POST';
+
       try {
-        await window.apiFetch('/clientes', {
-          method: 'POST',
+        await window.apiFetch(endpoint, {
+          method,
           body: JSON.stringify({ nome, matricula, idTipoCliente })
         });
-        window.showToast('Cliente cadastrado!', 'success');
+        window.showToast(id ? 'Cliente atualizado!' : 'Cliente cadastrado!', 'success');
         fecharModal('modalCliente');
         loadClientes();
       } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
@@ -360,36 +399,101 @@ window.excluirTipoCliente = async function(id) {
 };
 
 // ─── FUNCIONÁRIOS ─────────────────────────────────────────────────────────────
+let listaFuncionariosMemoria = [];
+
 async function loadFuncionarios() {
   try {
-    const funcs = await window.apiFetch('/funcionarios');
-    criarTabela('tabelaFuncionarios', 5, funcs, f => `
+    listaFuncionariosMemoria = await window.apiFetch('/funcionarios');
+    criarTabela('tabelaFuncionarios', 6, listaFuncionariosMemoria, f => `
       <td style="font-weight:600;">#${f.id}</td>
       <td>${f.nome}</td>
       <td>${f.cpf}</td>
       <td>${f.cargo}</td>
+      <td>${f.ativo ? '<span style="color:#38A169; font-weight:bold;">✅ Ativo</span>' : '<span style="color:#e53e3e; font-weight:bold;">❌ Inativo</span>'}</td>
       <td>
+        <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem; margin-right:6px;"
+          onclick="editarFuncionario(${f.id})">✏️ Editar</button>
         <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
-          onclick="excluirFuncionario(${f.id})">🗑</button>
+          onclick="excluirFuncionario(${f.id})">🗑 Excluir</button>
       </td>
     `);
   } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
 }
+
+window.abrirModalFuncionario = function() {
+  document.getElementById('funcId').value = '';
+  document.getElementById('modalFuncionarioTitle').textContent = 'Cadastrar Funcionário';
+  const form = document.querySelector('#modalFuncionario form');
+  if (form) form.reset();
+  // Mostrar campos de login ao cadastrar novo
+  document.getElementById('funcLogin').closest('.input-group').style.display = '';
+  document.getElementById('funcSenha').closest('.input-group').style.display = '';
+  document.getElementById('funcPerfil').closest('.input-group').style.display = '';
+  abrirModal('modalFuncionario');
+};
+
+window.editarFuncionario = function(id) {
+  const func = listaFuncionariosMemoria.find(f => f.id === id);
+  if (!func) return;
+  document.getElementById('funcId').value = func.id;
+  document.getElementById('funcNome').value = func.nome;
+  document.getElementById('funcCpf').value = func.cpf;
+  document.getElementById('funcCargo').value = func.cargo;
+  document.getElementById('modalFuncionarioTitle').textContent = 'Editar Funcionário';
+  // Esconder campos de login ao editar (login é criado na tela de usuários)
+  document.getElementById('funcLogin').closest('.input-group').style.display = 'none';
+  document.getElementById('funcSenha').closest('.input-group').style.display = 'none';
+  document.getElementById('funcPerfil').closest('.input-group').style.display = 'none';
+  abrirModal('modalFuncionario');
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   const formFuncionario = document.getElementById('formFuncionario');
   if (formFuncionario) {
     formFuncionario.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const id    = document.getElementById('funcId').value;
       const nome  = document.getElementById('funcNome').value;
       const cpf   = document.getElementById('funcCpf').value;
       const cargo = document.getElementById('funcCargo').value;
+
+      const endpoint = id ? `/funcionarios/${id}` : '/funcionarios';
+      const method = id ? 'PUT' : 'POST';
+
       try {
-        await window.apiFetch('/funcionarios', {
-          method: 'POST',
+        const funcSalvo = await window.apiFetch(endpoint, {
+          method,
           body: JSON.stringify({ nome, cpf, cargo, ativo: true })
         });
-        window.showToast('Funcionário cadastrado!', 'success');
+
+        // Se for cadastro novo e preencheu login/senha, criar acesso
+        if (!id) {
+          const login = document.getElementById('funcLogin').value.trim();
+          const senha = document.getElementById('funcSenha').value;
+          const perfil = document.getElementById('funcPerfil').value;
+
+          if (login && senha) {
+            try {
+              await window.apiFetch('/auth/cadastro', {
+                method: 'POST',
+                body: JSON.stringify({
+                  login,
+                  senha,
+                  perfil,
+                  idFuncionario: String(funcSalvo.id)
+                })
+              });
+              window.showToast('Funcionário cadastrado com acesso ao sistema!', 'success');
+            } catch (errLogin) {
+              window.showToast('Funcionário cadastrado, mas erro ao criar acesso: ' + (errLogin.message || ''), 'error');
+            }
+          } else {
+            window.showToast('Funcionário cadastrado!', 'success');
+          }
+        } else {
+          window.showToast('Funcionário atualizado!', 'success');
+        }
+
         fecharModal('modalFuncionario');
         loadFuncionarios();
       } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
@@ -545,14 +649,35 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadUsuarios() {
   try {
     const usuarios = await window.apiFetch('/usuarios');
-    criarTabela('tabelaUsuarios', 4, usuarios, u => `
+    criarTabela('tabelaUsuarios', 6, usuarios, u => `
       <td style="font-weight:600;">#${u.id}</td>
       <td>${u.login}</td>
-      <td>${u.perfil}</td>
-      <td>${u.ativo ? '✅ Ativo' : '❌ Inativo'}</td>
+      <td><span style="background:var(--light-blue); padding:4px 12px; border-radius:12px; font-size:0.8rem; font-weight:bold;">${u.perfil}</span></td>
+      <td>${u.funcionarioNome || '<span style="color:var(--text-muted);">—</span>'}</td>
+      <td>${u.ativo ? '<span style="color:#38A169; font-weight:bold;">✅ Ativo</span>' : '<span style="color:#e53e3e; font-weight:bold;">❌ Inativo</span>'}</td>
+      <td>
+        <button class="btn btn-secondary" style="padding:4px 10px; font-size:0.8rem;"
+          onclick="excluirUsuario(${u.id})">🗑 Excluir</button>
+      </td>
     `);
   } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
 }
+
+window.abrirModalUsuario = async function() {
+  document.getElementById('modalUsuarioTitle').textContent = 'Cadastrar Usuário';
+  const form = document.querySelector('#modalUsuario form');
+  if (form) form.reset();
+  // Carregar funcionários para o select de vinculação
+  try {
+    const funcs = await window.apiFetch('/funcionarios');
+    const sel = document.getElementById('usuFuncionario');
+    sel.innerHTML = '<option value="">Nenhum (sem vínculo)</option>';
+    funcs.forEach(f => {
+      sel.innerHTML += `<option value="${f.id}">${f.nome} — ${f.cargo}</option>`;
+    });
+  } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
+  abrirModal('modalUsuario');
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   const formUsuario = document.getElementById('formUsuario');
@@ -562,10 +687,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const login  = document.getElementById('usuLogin').value;
       const senha  = document.getElementById('usuSenha').value;
       const perfil = document.getElementById('usuPerfil').value;
+      const idFuncionario = document.getElementById('usuFuncionario').value;
       try {
         await window.apiFetch('/auth/cadastro', {
           method: 'POST',
-          body: JSON.stringify({ login, senha, perfil })
+          body: JSON.stringify({ login, senha, perfil, idFuncionario: idFuncionario || null })
         });
         window.showToast('Usuário cadastrado!', 'success');
         fecharModal('modalUsuario');
@@ -574,6 +700,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+window.excluirUsuario = async function(id) {
+  if (!confirm('Excluir este usuário?')) return;
+  try {
+    await window.apiFetch(`/usuarios/${id}`, { method: 'DELETE' });
+    window.showToast('Usuário excluído!', 'success');
+    loadUsuarios();
+  } catch(err) { window.showToast(err.message || 'Erro ao comunicar com o servidor.', 'error'); }
+};
 
 // Logout
 window.fazerLogout = function() {
