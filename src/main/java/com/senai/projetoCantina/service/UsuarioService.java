@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.senai.projetoCantina.model.Usuario;
 import com.senai.projetoCantina.repository.UsuarioRepository;
+import com.senai.projetoCantina.dto.UsuarioCadastroDTO;
 
 import com.senai.projetoCantina.exception.*;
 import com.senai.projetoCantina.exception.RecursoNaoEncontradoException;
@@ -33,6 +34,36 @@ public class UsuarioService {
         if (usuario.getSenha() != null && !usuario.getSenha().isBlank()) {
             usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario cadastrarNovoUsuario(UsuarioCadastroDTO dto) {
+        if (usuarioRepository.findByLogin(dto.getEmail()).isPresent()) {
+            throw new IllegalStateException("Já existe um usuário cadastrado com esse e-mail");
+        }
+        
+        if (dto.getTipoUsuario() == Usuario.TipoUsuario.ALUNO && (dto.getMatricula() == null || dto.getMatricula().isBlank())) {
+            throw new IllegalArgumentException("A matrícula é obrigatória para alunos");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setLogin(dto.getEmail()); // usando email como login
+        usuario.setSenha(passwordEncoder.encode(dto.getSenha()));
+        usuario.setMatricula(dto.getMatricula());
+        usuario.setTipoUsuario(dto.getTipoUsuario());
+        
+        // Mapeamento para o perfil antigo do Spring Security
+        if (dto.getTipoUsuario() == Usuario.TipoUsuario.ADMINISTRADOR_CANTINA) {
+            usuario.setPerfil(Usuario.Perfil.ADMIN);
+        } else {
+            usuario.setPerfil(Usuario.Perfil.OPERADOR);
+        }
+        
+        usuario.setAtivo(true);
+        
         return usuarioRepository.save(usuario);
     }
 

@@ -8,28 +8,49 @@
 </head>
 <body>
 
-  <div class="full-screen-center">
-    <div class="card" style="max-width: 500px; width: 100%; padding: 40px;">
-      <div style="text-align: center; margin-bottom: 32px;">
-        <h1 style="color: var(--primary-red); font-size: 2.5rem; margin-bottom: 8px;">Bem-vindo!</h1>
-        <p style="color: var(--text-muted);">Digite sua matrícula para identificar-se e iniciar o pedido.</p>
-      </div>
+  <div class="split-layout">
+    <div class="split-image-area">
+      <svg class="image-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </div>
 
-      <form id="totemLoginForm">
-        <div class="input-group">
-          <label for="matriculaAluno">Número da Matrícula</label>
-          <input type="text" id="matriculaAluno" placeholder="Ex: 123456" required autocomplete="off">
+    <div class="split-content">
+      <div class="card hover-darken" style="max-width: 450px; width: 100%; padding: 40px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <div style="color: var(--primary-red); margin-bottom: 16px; display: flex; justify-content: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M12 8v4"></path>
+              <path d="M12 16h.01"></path>
+            </svg>
+          </div>
+          <h1 style="color: var(--primary-red); font-size: 2.5rem; margin-bottom: 8px;">Bem-vindo!</h1>
+          <p style="color: var(--text-muted);">Digite sua matrícula para identificar-se e iniciar o pedido.</p>
         </div>
 
-        <div id="erroMatricula" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
+        <form id="totemLoginForm">
+          <div class="input-group">
+            <label for="matriculaAluno">Número da Matrícula</label>
+            <input type="text" id="matriculaAluno" placeholder="Ex: 123456" required autocomplete="off">
+          </div>
 
-        <button type="submit" id="btnEntrar" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 1.2rem; margin-top: 16px;">
-          Começar meu pedido 🍔
-        </button>
-      </form>
-      
-      <div style="text-align: center; margin-top: 24px;">
-        <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">Voltar para o início</a>
+          <div id="erroMatricula" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
+
+          <button type="submit" id="btnEntrar" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 1.1rem; margin-top: 16px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+            Começar meu pedido
+          </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 32px;">
+          <a href="index.html" style="color: var(--text-muted); font-size: 0.95rem; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='var(--text-dark)'" onmouseout="this.style.color='var(--text-muted)'">Voltar para o início</a>
+        </div>
       </div>
     </div>
   </div>
@@ -44,6 +65,8 @@
       const erroDiv = document.getElementById('erroMatricula');
       const matricula = document.getElementById('matriculaAluno').value.trim();
 
+      // Store original content
+      const btnOriginalContent = btn.innerHTML;
       btn.textContent = 'Verificando...';
       btn.disabled = true;
       erroDiv.style.display = 'none';
@@ -52,7 +75,6 @@
         const resultado = await apiFetch(`/clientes/matricula/${encodeURIComponent(matricula)}`);
 
         if (resultado.encontrado) {
-          // Salvar dados do cliente na sessão
           localStorage.setItem('cliente_nome', resultado.nome);
           localStorage.setItem('cliente_matricula', resultado.matricula);
           localStorage.setItem('cliente_id', resultado.id);
@@ -64,13 +86,13 @@
         } else {
           erroDiv.textContent = 'Matrícula não encontrada. Solicite o cadastro ao atendente.';
           erroDiv.style.display = 'block';
-          btn.textContent = 'Começar meu pedido 🍔';
+          btn.innerHTML = btnOriginalContent;
           btn.disabled = false;
         }
       } catch (err) {
         erroDiv.textContent = 'Matrícula não encontrada. Solicite o cadastro ao atendente.';
         erroDiv.style.display = 'block';
-        btn.textContent = 'Começar meu pedido 🍔';
+        btn.innerHTML = btnOriginalContent;
         btn.disabled = false;
       }
     });

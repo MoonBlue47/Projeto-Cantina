@@ -8,33 +8,66 @@
 </head>
 <body>
 
-  <div class="full-screen-center">
-    <div class="card" style="max-width: 600px; width: 100%; text-align: center; padding: 48px;">
-      
-      <div style="font-size: 4rem; margin-bottom: 16px;">🍔</div>
-      <h1 style="font-size: 2.5rem; margin-bottom: 8px; color: var(--primary-red);">Cantina Escolar</h1>
-      <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 1.2rem;">Escolha como deseja acessar o sistema</p>
+  <div class="split-layout">
+    <!-- Imagem/Placeholder (Desktop) -->
+    <div class="split-image-area">
+      <!-- Icone de Imagem (Placeholder) -->
+      <svg class="image-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </div>
 
-      <div style="display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;">
+    <!-- Conteúdo -->
+    <div class="split-content">
+      <div style="max-width: 500px; width: 100%; text-align: center;">
         
-        <a href="totem-login.html" class="card" style="flex: 1; min-width: 200px; cursor: pointer; text-decoration: none; border: 2px solid transparent; transition: border-color 0.2s;">
-          <div style="font-size: 3rem; margin-bottom: 16px;">📱</div>
-          <h2 style="font-size: 1.5rem; color: var(--text-dark); margin-bottom: 8px;">Totem Aluno</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem;">Autoatendimento para clientes</p>
-        </a>
+        <div style="margin-bottom: 24px; color: var(--primary-red); display: flex; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+          </svg>
+        </div>
+        
+        <h1 style="font-size: 2.5rem; margin-bottom: 8px; color: var(--primary-red);">Cantina Escolar</h1>
+        <p style="color: var(--text-muted); margin-bottom: 40px; font-size: 1.1rem;">Escolha como deseja acessar o sistema</p>
 
-        <a href="admin-login.html" class="card" style="flex: 1; min-width: 200px; cursor: pointer; text-decoration: none; border: 2px solid transparent; transition: border-color 0.2s; background-color: var(--light-blue);">
-          <div style="font-size: 3rem; margin-bottom: 16px;">⚙️</div>
-          <h2 style="font-size: 1.5rem; color: var(--text-dark); margin-bottom: 8px;">Painel Admin</h2>
-          <p style="color: var(--text-dark); font-size: 0.9rem; opacity: 0.8;">Gestão e Frente de Caixa</p>
-        </a>
+        <div style="display: flex; gap: 24px; flex-direction: column;">
+          
+          <a href="totem-login.html" class="card hover-darken" style="cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center;">
+            <div style="color: var(--primary-red); margin-bottom: 16px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <path d="M12 18h.01"></path>
+              </svg>
+            </div>
+            <h2 style="font-size: 1.5rem; color: var(--text-dark); margin-bottom: 8px;">Totem Aluno</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Autoatendimento para clientes</p>
+          </a>
+
+          <a href="admin-login.html" class="card hover-darken" style="cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center;">
+            <div style="color: var(--text-dark); margin-bottom: 16px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <h2 style="font-size: 1.5rem; color: var(--text-dark); margin-bottom: 8px;">Painel Admin</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Gestão e Frente de Caixa</p>
+          </a>
+
+        </div>
+
+        <div style="margin-top: 40px;">
+          <p style="color: var(--text-muted); font-size: 1rem;">Ainda não tem conta? <a href="cadastro.html" style="color: var(--primary-red); font-weight: 600; text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid var(--primary-red); transition: opacity 0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Cadastre-se aqui</a></p>
+        </div>
 
       </div>
-
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div id="toast-container"></div>
 
 </body>

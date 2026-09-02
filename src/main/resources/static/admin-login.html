@@ -6,35 +6,51 @@
   <title>Cantina - Login Admin</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body style="background-color: var(--light-blue);">
+<body>
 
-  <div class="full-screen-center">
-    <div class="card" style="max-width: 400px; width: 100%; padding: 40px; box-shadow: var(--shadow-lg);">
-      <div style="text-align: center; margin-bottom: 32px;">
-        <h1 style="color: var(--primary-red); font-size: 2rem; margin-bottom: 8px;">Painel de Gestão</h1>
-        <p style="color: var(--text-muted);">Acesso restrito para operadores.</p>
-      </div>
+  <div class="split-layout">
+    <div class="split-image-area">
+      <svg class="image-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+        <polyline points="21 15 16 10 5 21"></polyline>
+      </svg>
+    </div>
 
-      <form id="adminLoginForm">
-        <div class="input-group">
-          <label for="usuario">Usuário</label>
-          <input type="text" id="usuario" placeholder="Digite seu usuário" required autocomplete="username">
+    <div class="split-content">
+      <div class="card hover-darken" style="max-width: 450px; width: 100%; padding: 40px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <div style="color: var(--text-dark); margin-bottom: 16px; display: flex; justify-content: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </div>
+          <h1 style="color: var(--primary-red); font-size: 2rem; margin-bottom: 8px;">Painel de Gestão</h1>
+          <p style="color: var(--text-muted);">Acesso restrito para operadores.</p>
         </div>
 
-        <div class="input-group">
-          <label for="senha">Senha</label>
-          <input type="password" id="senha" placeholder="Digite sua senha" required autocomplete="current-password">
+        <form id="adminLoginForm">
+          <div class="input-group">
+            <label for="usuario">Usuário</label>
+            <input type="text" id="usuario" placeholder="Digite seu usuário" required autocomplete="username">
+          </div>
+
+          <div class="input-group">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" placeholder="Digite sua senha" required autocomplete="current-password">
+          </div>
+
+          <div id="erroLogin" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
+
+          <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 16px;">
+            Entrar no Sistema
+          </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 32px;">
+          <a href="index.html" style="color: var(--text-muted); font-size: 0.95rem; text-decoration: underline; transition: color 0.2s;" onmouseover="this.style.color='var(--text-dark)'" onmouseout="this.style.color='var(--text-muted)'">Voltar para o início</a>
         </div>
-
-        <div id="erroLogin" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
-
-        <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; padding: 16px; margin-top: 16px;">
-          Entrar no Sistema
-        </button>
-      </form>
-      
-      <div style="text-align: center; margin-top: 24px;">
-        <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">Voltar para o início</a>
       </div>
     </div>
   </div>
@@ -61,7 +77,6 @@
         });
 
         if (resultado.sucesso) {
-          // Salvar sessão no localStorage
           localStorage.setItem('admin_autenticado', 'true');
           localStorage.setItem('admin_perfil', resultado.perfil);
           localStorage.setItem('admin_nome', resultado.nome);

@@ -7,10 +7,10 @@
   --text-dark: #2D3748;
   --text-muted: #718096;
   --bg-app: #F7FAFC; /* Fundo suave para dar destaque aos cards brancos */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-  --radius-md: 12px;
+  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --radius-md: 16px;
   --radius-lg: 24px;
 }
 
@@ -47,24 +47,26 @@ ul {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
   gap: 8px;
+  outline: none;
 }
 
 .btn:active {
   transform: scale(0.98);
 }
+.btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(233, 35, 35, 0.4);
+}
 
 .btn-primary {
   background-color: var(--primary-red);
   color: var(--pure-white);
-  box-shadow: 0 4px 12px rgba(233, 35, 35, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: #c71b1b;
-  box-shadow: 0 6px 16px rgba(233, 35, 35, 0.4);
+  filter: brightness(0.9);
 }
 
 .btn-secondary {
@@ -73,19 +75,24 @@ ul {
 }
 
 .btn-secondary:hover {
-  background-color: #a9bed1;
+  filter: brightness(0.9);
 }
 
 .card {
   background-color: var(--pure-white);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 32px;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
 .card:hover {
   box-shadow: var(--shadow-md);
+}
+
+.hover-darken:hover {
+  background-color: #f8fafc;
 }
 
 .input-group {
@@ -167,7 +174,57 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--light-blue); /* Fundo secundário */
+  background-color: var(--bg-app); 
+  padding: 24px;
+}
+
+/* Split Layout (Telas de Entrada) */
+.split-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.split-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+  background-color: var(--bg-app);
+}
+
+.split-image-area {
+  display: none; /* Hide on mobile */
+}
+
+@media (min-width: 900px) {
+  .split-image-area {
+    display: flex;
+    flex: 1;
+    background-color: var(--light-blue);
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .split-image-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  }
+
+  /* SVG placeholder for image area */
+  .image-placeholder-icon {
+    width: 120px;
+    height: 120px;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.6;
+    z-index: 1;
+  }
 }
 
 /* Header comum (Totem) */

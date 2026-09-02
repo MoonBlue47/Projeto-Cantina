@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.senai.projetoCantina.model.Usuario;
 import com.senai.projetoCantina.service.UsuarioService;
+import com.senai.projetoCantina.dto.UsuarioCadastroDTO;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -25,6 +27,12 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario) {
         Usuario novoUsuario = usuarioService.cadastrar(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+    }
+
+    @PostMapping("/cadastro")
+    public ResponseEntity<Usuario> cadastrarNovoUsuario(@Valid @RequestBody UsuarioCadastroDTO dto) {
+        Usuario novoUsuario = usuarioService.cadastrarNovoUsuario(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
 
