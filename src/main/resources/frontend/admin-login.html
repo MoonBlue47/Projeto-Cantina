@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cantina - Login Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body style="background-color: var(--light-blue);">
+
+  <div class="full-screen-center">
+    <div class="card" style="max-width: 400px; width: 100%; padding: 40px; box-shadow: var(--shadow-lg);">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h1 style="color: var(--primary-red); font-size: 2rem; margin-bottom: 8px;">Painel de Gestão</h1>
+        <p style="color: var(--text-muted);">Acesso restrito para operadores.</p>
+      </div>
+
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <label for="usuario">Usuário</label>
+          <input type="text" id="usuario" placeholder="Digite seu usuário" required autocomplete="username">
+        </div>
+
+        <div class="input-group">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" placeholder="Digite sua senha" required autocomplete="current-password">
+        </div>
+
+        <div id="erroLogin" style="color: #e53e3e; font-size: 0.9rem; margin-top: 8px; display: none;"></div>
+
+        <button type="submit" id="btnLogin" class="btn btn-primary"
+          style="width: 100%; padding: 16px; margin-top: 16px;">
+          Entrar no Sistema
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.9rem; text-decoration: underline;">Voltar
+          para o início</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const btn = document.getElementById('btnLogin');
+      const erroDiv = document.getElementById('erroLogin');
+      const login = document.getElementById('usuario').value.trim();
+      const senha = document.getElementById('senha').value;
+
+      btn.textContent = 'Autenticando...';
+      btn.disabled = true;
+      erroDiv.style.display = 'none';
+
+      try {
+        const resultado = await apiFetch('/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({ login, senha })
+        });
+
+        if (resultado.sucesso) {
+          // Salvar sessão no localStorage
+          localStorage.setItem('admin_autenticado', 'true');
+          localStorage.setItem('admin_perfil', resultado.perfil);
+          localStorage.setItem('admin_nome', resultado.nome);
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          erroDiv.textContent = resultado.erro || 'Credenciais inválidas.';
+          erroDiv.style.display = 'block';
+          btn.textContent = 'Entrar no Sistema';
+          btn.disabled = false;
+        }
+      } catch (err) {
+        erroDiv.textContent = 'Usuário ou senha incorretos.';
+        erroDiv.style.display = 'block';
+        btn.textContent = 'Entrar no Sistema';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>

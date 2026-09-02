@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cantina - Fazer Pedido</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <header class="top-header">
+    <div style="display: flex; align-items: center; gap: 24px;">
+      <div class="logo-text">Cantina Escolar</div>
+
+      <div class="totem-nav-group">
+        <button class="totem-nav-tab active" id="tabCardapio"
+          onclick="window.alternarAbaTotem('cardapio')">Cardápio</button>
+        <button class="totem-nav-tab" id="tabMeusPedidos" onclick="window.alternarAbaTotem('pedidos')">Meus
+          Pedidos</button>
+      </div>
+    </div>
+
+    <div style="font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 16px;">
+      <span>Olá, <span id="displayClienteNome" class="text-red"></span>!</span>
+      <button class="btn btn-primary" style="padding: 8px 18px; font-size: 0.9rem; border-radius: 20px;"
+        onclick="window.logoutTotem()">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <div class="totem-layout" style="height: calc(100vh - 76px);">
+    <main class="totem-main">
+
+      <!-- Área do Menu Principal -->
+      <div class="totem-menu-area" id="secCardapio">
+
+        <!-- Barra de Pesquisa Instantânea -->
+        <div class="search-input-wrapper" style="flex-shrink:0;">
+          <input type="text" id="inputBuscaProduto" placeholder="Pesquisar salgado, bebida, sobremesa..."
+            style="padding-left: 20px;">
+        </div>
+
+        <div class="categories-bar" id="categoriesContainer">
+          <button class="category-btn active" data-categoria="Todos">Todos</button>
+          <!-- categorias carregadas dinamicamente pelo JS -->
+        </div>
+
+        <!-- Container isolado para a rolagem vertical dos produtos -->
+        <div class="product-grid-container">
+          <div class="product-grid" id="productGrid">
+            <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px;">
+              Carregando cardápio...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de Meus Pedidos -->
+      <div class="totem-menu-area" id="secMeusPedidos" style="display:none;">
+        <div class="page-header" style="margin-bottom: 20px;">
+          <h2>Meus Pedidos</h2>
+          <button class="btn btn-secondary" onclick="window.carregarMeusPedidos()">Atualizar</button>
+        </div>
+
+        <div id="containerMeusPedidos" class="meus-pedidos-section">
+          <div style="text-align:center; color:var(--text-muted); padding:40px;">
+            Carregando seus pedidos...
+          </div>
+        </div>
+      </div>
+
+      <!-- Carrinho / Bandeja Lateral -->
+      <aside class="totem-cart-area">
+        <div class="cart-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <h2>Sua Bandeja</h2>
+          <button class="btn btn-secondary"
+            style="padding:4px 10px; font-size:0.8rem; background:rgba(255,255,255,0.6);"
+            onclick="window.limparCarrinho()">Limpar</button>
+        </div>
+
+        <div class="cart-items" id="cartItemsContainer">
+          <div style="text-align: center; color: var(--text-muted); margin-top: 40px;">
+            Sua bandeja está vazia.<br>Adicione itens do cardápio!
+          </div>
+        </div>
+
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Total:</span>
+            <span class="text-red" id="cartTotalValue">R$ 0,00</span>
+          </div>
+          <button class="btn btn-primary btn-checkout" id="btnFinalizarPedido" onclick="window.abrirModalPagamento()">
+            Finalizar Pedido
+          </button>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- Modal: Selecionar Forma de Pagamento -->
+  <div class="modal-overlay" id="modalPagamento" style="display:none; align-items:center; justify-content:center;">
+    <div class="modal-content" style="max-width:420px; width:100%;">
+      <h2 style="margin-bottom:8px;">Forma de Pagamento</h2>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Escolha como deseja pagar:</p>
+      <div id="listaPagamentos" style="display:flex; flex-direction:column; gap:10px;"></div>
+      <button class="btn btn-secondary" style="width:100%; margin-top:20px;" onclick="fecharModalPagamento()">
+        Cancelar
+      </button>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/totem.js"></script>
+</body>
+
+</html>

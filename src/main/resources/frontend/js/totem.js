@@ -5,12 +5,32 @@ let currentCategory = 'Todos';
 let formasPagamento = [];
 
 // Elementos DOM
-const displayNome         = document.getElementById('displayClienteNome');
+const displayNome = document.getElementById('displayClienteNome');
 const categoriesContainer = document.getElementById('categoriesContainer');
-const productGrid         = document.getElementById('productGrid');
-const cartItemsContainer  = document.getElementById('cartItemsContainer');
-const cartTotalValue      = document.getElementById('cartTotalValue');
-const btnFinalizarPedido  = document.getElementById('btnFinalizarPedido');
+const productGrid = document.getElementById('productGrid');
+const cartItemsContainer = document.getElementById('cartItemsContainer');
+const cartTotalValue = document.getElementById('cartTotalValue');
+const btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
+const inputBusca = document.getElementById('inputBuscaProduto');
+
+// Helper de Imagem do Produto
+function getImagemProduto(id) {
+  try {
+    const map = JSON.parse(localStorage.getItem('cantina_produto_imagens')) || {};
+    return map[id] || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+// Função de Logout do Totem
+window.logoutTotem = function () {
+  localStorage.removeItem('cliente_nome');
+  localStorage.removeItem('cliente_matricula');
+  localStorage.removeItem('cliente_id');
+  localStorage.removeItem('ultimo_pedido_id');
+  window.location.href = 'totem-login.html';
+};
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', async () => {
@@ -36,8 +56,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Listener de Busca Instantânea por Nome
+  if (inputBusca) {
+    inputBusca.addEventListener('input', () => {
+      renderProducts();
+    });
+  }
+
   if (btnFinalizarPedido) {
     btnFinalizarPedido.addEventListener('click', window.abrirModalPagamento);
+  }
+
+  // Checar se veio com a URL ?aba=pedidos (ex: vindo da tela de sucesso)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('aba') === 'pedidos') {
+    window.alternarAbaTotem('pedidos');
   }
 });
 
@@ -86,13 +119,19 @@ function renderProducts() {
   if (!productGrid) return;
   productGrid.innerHTML = '';
 
-  const filteredProducts = currentCategory === 'Todos'
+  const termoBusca = (inputBusca ? inputBusca.value : '').toLowerCase().trim();
+
+  let filteredProducts = currentCategory === 'Todos'
     ? products
     : products.filter(p => p.categoria === currentCategory);
 
+  if (termoBusca) {
+    filteredProducts = filteredProducts.filter(p => (p.nome || '').toLowerCase().includes(termoBusca));
+  }
+
   if (filteredProducts.length === 0) {
     productGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px;">
-      Nenhum produto encontrado nesta categoria.
+      Nenhum produto encontrado.
     </div>`;
     return;
   }
@@ -102,11 +141,13 @@ function renderProducts() {
     const semEstoque = (product.estoque === undefined || product.estoque <= 0);
     card.className = 'product-card' + (semEstoque ? ' out-of-stock' : '');
 
-    let icon = '🍔';
-    const cat = (product.categoria || '').toLowerCase();
-    if (cat.includes('bebida')) icon = '🥤';
-    else if (cat.includes('doce') || cat.includes('bolo')) icon = '🍰';
-    else if (cat.includes('saud') || cat.includes('fruta') || cat.includes('salada')) icon = '🥗';
+    const imgData = getImagemProduto(product.id);
+    let imgHtml = '';
+    if (imgData) {
+      imgHtml = `<img src="${imgData}" class="product-img-real" alt="${product.nome}">`;
+    } else {
+      imgHtml = `<div class="product-img-placeholder" style="font-size:0.9rem; color:var(--text-muted);">Sem Foto</div>`;
+    }
 
     const badgeHtml = semEstoque
       ? `<span class="stock-badge out-of-stock-badge">Indisponível (Sem Estoque)</span>`
@@ -117,7 +158,7 @@ function renderProducts() {
       : `<button class="btn-add" onclick="addToCart(${product.id})">Adicionar</button>`;
 
     card.innerHTML = `
-      <div class="product-img-placeholder">${icon}</div>
+      ${imgHtml}
       <div class="product-name">${product.nome}</div>
       <div class="product-desc">${product.descricao || product.categoria}</div>
       ${badgeHtml}
@@ -128,9 +169,112 @@ function renderProducts() {
   });
 }
 
+// ─── Navegação por Abas (Cardápio / Meus Pedidos) ──────────────────────────────
+
+window.alternarAbaTotem = function (aba) {
+  const secCardapio = document.getElementById('secCardapio');
+  const secMeusPedidos = document.getElementById('secMeusPedidos');
+  const tabCardapio = document.getElementById('tabCardapio');
+  const tabMeusPedidos = document.getElementById('tabMeusPedidos');
+
+  if (aba === 'cardapio') {
+    if (secCardapio) secCardapio.style.display = 'flex';
+    if (secMeusPedidos) secMeusPedidos.style.display = 'none';
+    if (tabCardapio) tabCardapio.classList.add('active');
+    if (tabMeusPedidos) tabMeusPedidos.classList.remove('active');
+  } else {
+    if (secCardapio) secCardapio.style.display = 'none';
+    if (secMeusPedidos) secMeusPedidos.style.display = 'flex';
+    if (tabCardapio) tabCardapio.classList.remove('active');
+    if (tabMeusPedidos) tabMeusPedidos.classList.add('active');
+    window.carregarMeusPedidos();
+  }
+};
+
+// ─── Área Meus Pedidos ───────────────────────────────────────────────────────
+
+window.carregarMeusPedidos = async function () {
+  const container = document.getElementById('containerMeusPedidos');
+  if (!container) return;
+
+  const clienteIdStr = localStorage.getItem('cliente_id');
+  const clienteId = clienteIdStr ? Number(clienteIdStr) : null;
+
+  container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px;">Carregando seus pedidos...</div>`;
+
+  try {
+    const vendas = await window.apiFetch('/vendas');
+    const meusPedidos = clienteId
+      ? vendas.filter(v => Number(v.idCliente) === clienteId)
+      : vendas;
+
+    if (!meusPedidos || meusPedidos.length === 0) {
+      container.innerHTML = `
+        <div class="card" style="text-align:center; padding:40px; color:var(--text-muted);">
+          <h3 style="margin-bottom:8px; color:var(--text-dark);">Você ainda não possui pedidos registrados.</h3>
+          <p>Faça seu primeiro pedido no cardápio!</p>
+        </div>`;
+      return;
+    }
+
+    meusPedidos.sort((a, b) => b.id - a.id);
+
+    container.innerHTML = '';
+    meusPedidos.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'pedido-card';
+
+      const dataStr = p.dataVenda ? new Date(p.dataVenda).toLocaleString('pt-BR') : 'Data não informada';
+      const statusStr = (p.status || 'PENDENTE').toUpperCase();
+      let statusClass = 'pendente';
+      if (statusStr.includes('CONCLU') || statusStr.includes('PAGO')) statusClass = 'concluido';
+      else if (statusStr.includes('CANCEL')) statusClass = 'cancelado';
+
+      let itensHtml = '';
+      if (p.itens && p.itens.length > 0) {
+        itensHtml = p.itens.map(item => {
+          const prodObj = products.find(prod => prod.id === item.idProduto);
+          const nomeProd = prodObj ? prodObj.nome : `Item #${item.idProduto}`;
+          return `
+            <div class="pedido-item-row">
+              <span>${item.quantidade}x ${nomeProd}</span>
+              <span>R$ ${Number(item.subtotal || (item.precoUnitario * item.quantidade) || 0).toFixed(2).replace('.', ',')}</span>
+            </div>
+          `;
+        }).join('');
+      } else {
+        itensHtml = `<div style="color:var(--text-muted); font-style:italic;">Itens do pedido</div>`;
+      }
+
+      card.innerHTML = `
+        <div class="pedido-header">
+          <div>
+            <div class="pedido-id">Pedido #${p.id}</div>
+            <div class="pedido-data">Data: ${dataStr}</div>
+          </div>
+          <span class="status-badge ${statusClass}">${statusStr}</span>
+        </div>
+        <div class="pedido-itens-list">
+          ${itensHtml}
+        </div>
+        <div class="pedido-total-row">
+          <span>Total</span>
+          <span class="text-red">R$ ${Number(p.valorTotal).toFixed(2).replace('.', ',')}</span>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = `
+      <div style="text-align:center; color:var(--primary-red); padding:40px;">
+        Erro ao carregar seus pedidos. Tente novamente em instantes.
+      </div>`;
+  }
+};
+
 // ─── Carrinho ────────────────────────────────────────────────────────────────
 
-window.addToCart = function(productId) {
+window.addToCart = function (productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
 
@@ -154,7 +298,7 @@ window.addToCart = function(productId) {
   renderCart();
 };
 
-window.updateQuantity = function(productId, delta) {
+window.updateQuantity = function (productId, delta) {
   const itemIndex = cart.findIndex(item => item.id === productId);
   if (itemIndex > -1) {
     cart[itemIndex].quantidade += delta;
@@ -163,6 +307,13 @@ window.updateQuantity = function(productId, delta) {
     }
     renderCart();
   }
+};
+
+window.limparCarrinho = function () {
+  if (cart.length === 0) return;
+  cart = [];
+  renderCart();
+  window.showToast('Bandeja limpa com sucesso!', 'info');
 };
 
 function renderCart() {
@@ -204,7 +355,7 @@ function renderCart() {
 
 // ─── Modal de Pagamento ──────────────────────────────────────────────────────
 
-window.abrirModalPagamento = function() {
+window.abrirModalPagamento = function () {
   if (cart.length === 0) {
     window.showToast('Sua bandeja está vazia! Adicione produtos.', 'error');
     return;
@@ -229,19 +380,9 @@ window.abrirModalPagamento = function() {
     formasPagamento.forEach(fp => {
       const btn = document.createElement('button');
       btn.className = 'btn btn-secondary';
-      const tipoPix = (fp.tipo || '').toUpperCase() === 'PIX';
       btn.style.cssText = 'padding:14px; font-size:1rem; text-align:left; width:100%;';
-      if (tipoPix) {
-        // Botao Pix com icone e estilo especial
-        btn.innerHTML = `<span style="display:flex;align-items:center;gap:10px;">`
-          + `<svg width="22" height="22" viewBox="0 0 24 24" fill="#32BCAD" xmlns="http://www.w3.org/2000/svg">`
-          + `<path d="M19.05 8.5a2.05 2.05 0 0 0-1.45-.6h-1.23l-3.01-3.01a2.05 2.05 0 0 0-2.9 0L7.43 7.9H6.4a2.05 2.05 0 0 0-1.45.6L2 11.45l2.95 2.95c.39.39.9.6 1.45.6h1.23l3.01 3.01a2.05 2.05 0 0 0 2.9 0l3.03-3.01h1.04a2.05 2.05 0 0 0 1.45-.6L22 11.45l-2.95-2.95Z"/>`
-          + `</svg><span>Pix — QR Code instantâneo</span></span>`;
-        btn.onclick = () => window.confirmarPedidoPix(fp.id);
-      } else {
-        btn.textContent = `💳 ${fp.tipo || fp.descricao || 'Pagamento #' + fp.id}`;
-        btn.onclick = () => window.confirmarPedido(fp.id);
-      }
+      btn.textContent = `${fp.tipo || fp.descricao || 'Pagamento #' + fp.id}`;
+      btn.onclick = () => window.confirmarPedido(fp.id);
       lista.appendChild(btn);
     });
   }
@@ -250,7 +391,7 @@ window.abrirModalPagamento = function() {
   modal.classList.add('active');
 };
 
-window.fecharModalPagamento = function() {
+window.fecharModalPagamento = function () {
   const modal = document.getElementById('modalPagamento');
   if (modal) {
     modal.classList.remove('active');
@@ -258,50 +399,9 @@ window.fecharModalPagamento = function() {
   }
 };
 
-// ─── Finalizar Pedido ──────────────────────────────────────────────
+// ─── Finalizar Pedido ────────────────────────────────────────────────────────
 
-/**
- * Fluxo exclusivo para Pix:
- * Registra a venda via API e redireciona para a pagina de QR Code Pix.
- */
-window.confirmarPedidoPix = async function(idFormaPagamento) {
-  window.fecharModalPagamento();
-
-  const btn = document.getElementById('btnFinalizarPedido');
-  if (btn) { btn.textContent = 'Gerando QR Code...'; btn.disabled = true; }
-
-  const clienteId = localStorage.getItem('cliente_id')
-    ? Number(localStorage.getItem('cliente_id'))
-    : null;
-
-  const total = cart.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-
-  const payload = {
-    idCliente:     clienteId,
-    idFuncionario: null,
-    itens: cart.map(item => ({
-      idProduto:     item.id,
-      quantidade:    item.quantidade,
-      precoUnitario: item.preco
-    })),
-    pagamentos: [{ idFormaPagamento, valor: total }]
-  };
-
-  try {
-    const venda = await window.apiFetch('/vendas', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    localStorage.setItem('ultimo_pedido_id', venda.id);
-    // Redireciona para a pagina de pagamento Pix com QR Code real
-    window.location.href = `/pagamento/pix/${venda.id}`;
-  } catch (error) {
-    if (btn) { btn.textContent = 'Finalizar Pedido'; btn.disabled = false; }
-    window.showToast('Erro ao gerar pagamento Pix. Tente novamente.', 'error');
-  }
-};
-
-window.confirmarPedido = async function(idFormaPagamento) {
+window.confirmarPedido = async function (idFormaPagamento) {
   window.fecharModalPagamento();
 
   const btn = document.getElementById('btnFinalizarPedido');
@@ -317,11 +417,11 @@ window.confirmarPedido = async function(idFormaPagamento) {
   const total = cart.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
   const payload = {
-    idCliente:     clienteId,
+    idCliente: clienteId,
     idFuncionario: null,
     itens: cart.map(item => ({
-      idProduto:     item.id,
-      quantidade:    item.quantidade,
+      idProduto: item.id,
+      quantidade: item.quantidade,
       precoUnitario: item.preco
     })),
     pagamentos: idFormaPagamento
