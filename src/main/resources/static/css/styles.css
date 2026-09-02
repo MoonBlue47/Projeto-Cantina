@@ -1,12 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
 
 :root {
-  --primary-red: #E92323;
-  --pure-white: #FFFFFF;
-  --light-blue: #BCD0E2;
-  --text-dark: #2D3748;
-  --text-muted: #718096;
-  --bg-app: #F7FAFC; /* Fundo suave para dar destaque aos cards brancos */
+  /* Identidade Visual - Cores Principais */
+  --cor-azul-principal: #1E40AF; /* Azul tecnológico e institucional */
+  --cor-azul-claro: #DBEAFE; /* Azul pastel amigável */
+  --cor-azul-fundo-home: #EAF4FF; /* Azul muito claro pastel para entrada */
+  --cor-azul-fundo-totem: #EFF6FF; /* Azul super leve e acolhedor */
+  --cor-azul-fundo-admin: #F1F5F9; /* Cinza-azulado sóbrio e profissional */
+  --cor-vermelho: #F5222D; /* Vermelho vivo e marcante para destaque */
+  --cor-branco: #FFFFFF;
+  --cor-cinza-claro: #F8FAFC;
+  --cor-texto-escuro: #1E293B;
+  --cor-texto-suave: #64748B;
+
+  /* Mapeamento de variáveis existentes para manter estrutura */
+  --primary-red: var(--cor-vermelho);
+  --pure-white: var(--cor-branco);
+  --light-blue: var(--cor-azul-claro);
+  --text-dark: var(--cor-texto-escuro);
+  --text-muted: var(--cor-texto-suave);
+  --bg-app: var(--cor-azul-fundo-home);
+
+  /* Sombras e Raios mantidos */
   --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
   --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
   --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
@@ -203,7 +218,7 @@ ul {
   .split-image-area {
     display: flex;
     flex: 1;
-    background-color: var(--light-blue);
+    background: linear-gradient(135deg, var(--cor-azul-principal) 0%, #3B82F6 100%);
     position: relative;
     align-items: center;
     justify-content: center;
@@ -252,16 +267,18 @@ ul {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--cor-azul-fundo-admin);
 }
 
 .admin-sidebar {
   width: 280px;
-  background-color: var(--light-blue);
+  background-color: var(--pure-white);
   display: flex;
   flex-direction: column;
   padding: 24px;
   box-shadow: var(--shadow-sm);
   z-index: 10;
+  border-right: 1px solid rgba(0,0,0,0.05);
 }
 
 .admin-sidebar .logo {
@@ -295,7 +312,7 @@ ul {
 
 .admin-content {
   flex-grow: 1;
-  background-color: var(--bg-app);
+  background-color: var(--cor-azul-fundo-admin);
   padding: 40px;
   overflow-y: auto;
 }
@@ -384,7 +401,7 @@ ul {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--bg-app);
+  background-color: var(--cor-azul-fundo-totem);
 }
 
 .totem-main {
