@@ -57,8 +57,12 @@ O back-end segue o padrão arquitetural em camadas para separação estrita de r
 │   └── resources/               # Propriedades da aplicação e credenciais
 └── pom.xml                      # Dependências do projeto Maven
 
+````
 ---
 
 ## 🚀 Como Executar Localmente
 
+Pré-requisitos
 
+* Java **JDK 21** instaldo
+* Servidor **MySQL** rodando localmente
