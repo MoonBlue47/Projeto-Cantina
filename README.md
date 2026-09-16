@@ -56,3 +56,9 @@ O back-end segue o padrão arquitetural em camadas para separação estrita de r
 │   ├── main/java/com/senai/projetoCantina/ # Código-fonte da aplicação
 │   └── resources/               # Propriedades da aplicação e credenciais
 └── pom.xml                      # Dependências do projeto Maven
+
+---
+
+## 🚀 Como Executar Localmente
+
+
