@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.senai.projetoCantina.model.TipoCliente;
 import com.senai.projetoCantina.repository.TipoClienteRepository;
+
 import com.senai.projetoCantina.exception.*;
 
 @Service
@@ -23,7 +24,7 @@ public class TipoClienteService {
     @Transactional
     public TipoCliente cadastrar(TipoCliente tipoCliente) {
         if (tipoCliente.getNome() != null && !tipoCliente.getNome().isBlank()) {
-            if (tipoClienteRepository.findByDescricao(tipoCliente.getNome()).isPresent()) {
+            if (tipoClienteRepository.findByNome(tipoCliente.getNome()).isPresent()) {
                 throw new IllegalStateException("Já existe um tipo de cliente com essa descrição");
             }
         }
@@ -38,7 +39,7 @@ public class TipoClienteService {
     @Transactional(readOnly = true)
     public TipoCliente buscarPorId(Long id) {
         return tipoClienteRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("TipoCliente", id));
+                .orElseThrow(() -> new RuntimeException("TipoCliente não encontrado. ID: " + id));
     }
 
     @Transactional
@@ -46,7 +47,7 @@ public class TipoClienteService {
         TipoCliente existente = buscarPorId(id);
 
         if (dadosNovos.getNome() != null && !dadosNovos.getNome().isBlank()) {
-            Optional<TipoCliente> tipoComMesmaDescricao = tipoClienteRepository.findByDescricao(dadosNovos.getNome());
+            Optional<TipoCliente> tipoComMesmaDescricao = tipoClienteRepository.findByNome(dadosNovos.getNome());
             if (tipoComMesmaDescricao.isPresent() && !tipoComMesmaDescricao.get().getId().equals(id)) {
                 throw new IllegalStateException("Já existe outro tipo de cliente com essa descrição");
             }

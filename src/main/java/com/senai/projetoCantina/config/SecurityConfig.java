@@ -16,11 +16,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    /**
-     * Libera todas as rotas /api/** sem autenticação e configura CORS
-     * para permitir chamadas do front-end (arquivo local ou qualquer origem).
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -52,5 +47,10 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public org.springframework.security.core.userdetails.UserDetailsService userDetailsService() {
+        return new org.springframework.security.provisioning.InMemoryUserDetailsManager();
     }
 }

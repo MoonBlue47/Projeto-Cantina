@@ -10,10 +10,11 @@ public class FormaPagamento {
 	
 	@Id
 	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@Column(name = "id_forma_pagamento")
     private Long id;
 	
-	@Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false, length = 30)
+	@Convert(converter = TipoPagamentoConverter.class)
+    @Column(name = "tipo", nullable = false, length = 50)
     private TipoPagamento tipo;
 
     public FormaPagamento() {

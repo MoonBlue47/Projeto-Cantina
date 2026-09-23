@@ -5,24 +5,23 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tb_venda_pagamento")
+@Table(name = "venda_pagamento")
 public class VendaPagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_venda_pagamento")
     private Long id;
 
-    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venda_id", nullable = false)
+    @JoinColumn(name = "id_venda", nullable = false) 
     private Venda venda;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "forma_pagamento_id", nullable = false)
+    @JoinColumn(name = "id_forma_pagamento", nullable = false) 
     private FormaPagamento formaPagamento;
 
-    @Column(name = "valor_pago", nullable = false, precision = 10, scale = 2)
+    @Column(name = "valor", nullable = false, precision = 12, scale = 2) 
     private BigDecimal valorPago = BigDecimal.ZERO;
 
     @Column(name = "numero_parcelas")
@@ -39,49 +38,47 @@ public class VendaPagamento {
         this.numeroParcelas = numeroParcelas != null ? numeroParcelas : 1;
     }
 
-   
-
     public Long getId() {
-		return id;
-	}
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Venda getVenda() {
-		return venda;
-	}
+    public Venda getVenda() {
+        return venda;
+    }
 
-	public void setVenda(Venda venda) {
-		this.venda = venda;
-	}
+    public void setVenda(Venda venda) {
+        this.venda = venda;
+    }
 
-	public FormaPagamento getFormaPagamento() {
-		return formaPagamento;
-	}
+    public FormaPagamento getFormaPagamento() {
+        return formaPagamento;
+    }
 
-	public void setFormaPagamento(FormaPagamento formaPagamento) {
-		this.formaPagamento = formaPagamento;
-	}
+    public void setFormaPagamento(FormaPagamento formaPagamento) {
+        this.formaPagamento = formaPagamento;
+    }
 
-	public BigDecimal getValorPago() {
-		return valorPago;
-	}
+    public BigDecimal getValorPago() {
+        return valorPago;
+    }
 
-	public void setValorPago(BigDecimal valorPago) {
-		this.valorPago = valorPago;
-	}
+    public void setValorPago(BigDecimal valorPago) {
+        this.valorPago = valorPago;
+    }
 
-	public Integer getNumeroParcelas() {
-		return numeroParcelas;
-	}
+    public Integer getNumeroParcelas() {
+        return numeroParcelas;
+    }
 
-	public void setNumeroParcelas(Integer numeroParcelas) {
-		this.numeroParcelas = numeroParcelas;
-	}
+    public void setNumeroParcelas(Integer numeroParcelas) {
+        this.numeroParcelas = numeroParcelas;
+    }
 
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

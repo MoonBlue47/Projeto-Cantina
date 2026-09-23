@@ -28,7 +28,7 @@ public class EstoqueService {
 		}
 		
 		MovimentacaoEstoque ultimaMovimentacao = movimentacaoRepository
-				.findTopByProdutoIdOrderByDataMovimentacao(produto.getId())
+				.findTopByProdutoIdOrderByDataMovimentoDesc(produto.getId())
 				.orElse(null);
 				
 		int saldoAnterior = (ultimaMovimentacao != null) ? ultimaMovimentacao.getSaldoAtual(): 0;
@@ -43,7 +43,7 @@ public class EstoqueService {
 		novaMovimentacao.setDataMovimento(LocalDateTime.now());
 		novaMovimentacao.setProduto(produto);
 		
-		movimentacaoRepository.saveAllAndFlush(null);
+		movimentacaoRepository.save(novaMovimentacao);
 		
 		atualizarPrateleira(produto, saldoAtual, valorUnitario, novaMovimentacao);
 		
@@ -57,7 +57,7 @@ public class EstoqueService {
 		} 
 		
 		MovimentacaoEstoque ultimaMovimentacao = movimentacaoRepository
-				.findTopByProdutoIdOrderByDataMovimentacao(produto.getId())
+				.findTopByProdutoIdOrderByDataMovimentoDesc(produto.getId())
 				.orElseThrow(() -> new IllegalStateException("Não há estoque cadastrado para este produto"));
 		
 		int saldoAnterior = ultimaMovimentacao.getSaldoAtual();

@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.senai.projetoCantina.model.Fornecedor;
 import com.senai.projetoCantina.repository.FornecedorRepository;
+
 import com.senai.projetoCantina.exception.*;
+
 
 @Service
 public class FornecedorService {
@@ -42,7 +44,7 @@ public class FornecedorService {
 	@Transactional(readOnly = true)
     public Fornecedor buscarPorId(Long id) {
         return fornecedorRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Fornecedor", id));
+                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado. ID: " + id));
     
 	}
 

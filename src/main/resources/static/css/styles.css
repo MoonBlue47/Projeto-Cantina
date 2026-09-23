@@ -1,16 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
 
 :root {
-  --primary-red: #E92323;
-  --pure-white: #FFFFFF;
-  --light-blue: #BCD0E2;
-  --text-dark: #2D3748;
-  --text-muted: #718096;
-  --bg-app: #F7FAFC;
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-  --radius-md: 12px;
+  /* Identidade Visual - Cores Principais */
+  --cor-azul-principal: #1E40AF; /* Azul tecnológico e institucional */
+  --cor-azul-claro: #DBEAFE; /* Azul pastel amigável */
+  --cor-azul-fundo-home: #EAF4FF; /* Azul muito claro pastel para entrada */
+  --cor-azul-fundo-totem: #EFF6FF; /* Azul super leve e acolhedor */
+  --cor-azul-fundo-admin: #F1F5F9; /* Cinza-azulado sóbrio e profissional */
+  --cor-vermelho: #F5222D; /* Vermelho vivo e marcante para destaque */
+  --cor-branco: #FFFFFF;
+  --cor-cinza-claro: #F8FAFC;
+  --cor-texto-escuro: #1E293B;
+  --cor-texto-suave: #64748B;
+
+  /* Mapeamento de variáveis existentes para manter estrutura */
+  --primary-red: var(--cor-vermelho);
+  --pure-white: var(--cor-branco);
+  --light-blue: var(--cor-azul-claro);
+  --text-dark: var(--cor-texto-escuro);
+  --text-muted: var(--cor-texto-suave);
+  --bg-app: var(--cor-azul-fundo-home);
+
+  /* Sombras e Raios mantidos */
+  --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --radius-md: 16px;
   --radius-lg: 24px;
 }
 
@@ -47,24 +62,26 @@ ul {
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   border: none;
   gap: 8px;
+  outline: none;
 }
 
 .btn:active {
   transform: scale(0.98);
 }
+.btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(233, 35, 35, 0.4);
+}
 
 .btn-primary {
   background-color: var(--primary-red);
   color: var(--pure-white);
-  box-shadow: 0 4px 12px rgba(233, 35, 35, 0.3);
 }
 
 .btn-primary:hover {
-  background-color: #c71b1b;
-  box-shadow: 0 6px 16px rgba(233, 35, 35, 0.4);
+  filter: brightness(0.9);
 }
 
 .btn-secondary {
@@ -73,19 +90,24 @@ ul {
 }
 
 .btn-secondary:hover {
-  background-color: #a9bed1;
+  filter: brightness(0.9);
 }
 
 .card {
   background-color: var(--pure-white);
   border-radius: var(--radius-md);
-  padding: 24px;
+  padding: 32px;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.02);
 }
 
 .card:hover {
   box-shadow: var(--shadow-md);
+}
+
+.hover-darken:hover {
+  background-color: #f8fafc;
 }
 
 .input-group {
@@ -167,7 +189,57 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--light-blue);
+  background-color: var(--bg-app); 
+  padding: 24px;
+}
+
+/* Split Layout (Telas de Entrada) */
+.split-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.split-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+  background-color: var(--bg-app);
+}
+
+.split-image-area {
+  display: none; /* Hide on mobile */
+}
+
+@media (min-width: 900px) {
+  .split-image-area {
+    display: flex;
+    flex: 1;
+    background: linear-gradient(135deg, var(--cor-azul-principal) 0%, #3B82F6 100%);
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .split-image-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+  }
+
+  /* SVG placeholder for image area */
+  .image-placeholder-icon {
+    width: 120px;
+    height: 120px;
+    color: rgba(255, 255, 255, 0.8);
+    opacity: 0.6;
+    z-index: 1;
+  }
 }
 
 /* Header comum (Totem) */
@@ -195,16 +267,18 @@ ul {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--cor-azul-fundo-admin);
 }
 
 .admin-sidebar {
   width: 280px;
-  background-color: var(--light-blue);
+  background-color: var(--pure-white);
   display: flex;
   flex-direction: column;
   padding: 24px;
   box-shadow: var(--shadow-sm);
   z-index: 10;
+  border-right: 1px solid rgba(0,0,0,0.05);
 }
 
 .admin-sidebar .logo {
@@ -238,7 +312,7 @@ ul {
 
 .admin-content {
   flex-grow: 1;
-  background-color: var(--bg-app);
+  background-color: var(--cor-azul-fundo-admin);
   padding: 40px;
   overflow-y: auto;
 }
@@ -327,7 +401,7 @@ ul {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--bg-app);
+  background-color: var(--cor-azul-fundo-totem);
 }
 
 .totem-main {
@@ -350,8 +424,6 @@ ul {
   margin-bottom: 32px;
   overflow-x: auto;
   padding-bottom: 12px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
 }
 
 .category-btn {
@@ -545,24 +617,32 @@ ul {
 .text-red { color: var(--primary-red); }
 .bg-white { background-color: var(--pure-white); }
 
-/* --- Responsividade (Telas Menores e Totens Verticais) --- */
-@media (max-width: 900px) {
-  .totem-main {
-    flex-direction: column;
-    overflow-y: auto;
-  }
-  .totem-cart-area {
-    width: 100%;
-    border-left: none;
-    border-top: 2px solid #edf2f7;
-  }
-  .admin-layout {
-    flex-direction: column;
-    height: auto;
-    overflow: visible;
-  }
-  .admin-sidebar {
-    width: 100%;
-    height: auto;
-  }
+/* Produtos sem estoque no totem */
+.product-card.out-of-stock {
+  opacity: 0.55;
+  filter: grayscale(80%);
+  cursor: not-allowed;
+}
+
+.product-card.out-of-stock .btn-add {
+  background-color: #cbd5e0 !important;
+  color: #718096 !important;
+  cursor: not-allowed;
+}
+
+.stock-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+.stock-badge.in-stock {
+  background-color: #e6fffa;
+  color: #234e52;
+}
+.stock-badge.out-of-stock-badge {
+  background-color: #fed7d7;
+  color: #9b2c2c;
 }

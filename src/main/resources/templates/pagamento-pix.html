@@ -1,0 +1,880 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Pagamento via Pix para o pedido da Cantina SENAI. Escaneie o QR Code ou copie o codigo Pix Copia e Cola."/>
+    <title>Pagamento Pix | Cantina SENAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <style>
+        /* ===== Design System ===== */
+        :root {
+            --pix-green:       #32BCAD;
+            --pix-green-dark:  #1a9e90;
+            --pix-green-light: #e8faf8;
+            --bg-primary:      #0f1117;
+            --bg-card:         #1a1d27;
+            --bg-card-alt:     #22263a;
+            --border-subtle:   rgba(255,255,255,0.08);
+            --border-pix:      rgba(50,188,173,0.35);
+            --text-primary:    #f0f2ff;
+            --text-secondary:  #8b90a7;
+            --text-muted:      #555c78;
+            --success-bg:      rgba(50,188,173,0.12);
+            --success-border:  rgba(50,188,173,0.4);
+            --error-bg:        rgba(239,68,68,0.12);
+            --error-border:    rgba(239,68,68,0.4);
+            --radius-lg:       18px;
+            --radius-md:       12px;
+            --radius-sm:       8px;
+            --shadow-card:     0 8px 40px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.04) inset;
+            --shadow-qr:       0 0 0 6px rgba(50,188,173,0.12), 0 12px 40px rgba(0,0,0,0.6);
+            --transition:      0.22s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 16px 60px;
+        }
+
+        /* Background Gradient Orbs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px; left: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(50,188,173,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -200px; right: -200px;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== Header ===== */
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pix-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pix-logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--pix-green) 0%, #1a9e90 100%);
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(50,188,173,0.4);
+        }
+
+        .pix-logo-icon svg {
+            width: 28px; height: 28px;
+            fill: #fff;
+        }
+
+        .pix-logo-text {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--pix-green) 0%, #7df9ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== Main Card ===== */
+        .payment-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: cardEntrance 0.5s ease both;
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== Alert Banner ===== */
+        .alert-success {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--success-bg);
+            border-bottom: 1px solid var(--success-border);
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success .alert-icon {
+            flex-shrink: 0;
+            width: 24px; height: 24px;
+            background: var(--pix-green);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1px;
+        }
+
+        .alert-success .alert-icon svg { width: 14px; height: 14px; fill: #fff; }
+
+        .alert-success .alert-text strong {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--pix-green);
+            margin-bottom: 2px;
+        }
+
+        .alert-success .alert-text span {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== Order Info Strip ===== */
+        .order-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--bg-card-alt), var(--bg-card));
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .order-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .order-id {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+
+        .order-amount {
+            text-align: right;
+        }
+
+        .amount-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--pix-green), #7df9ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .amount-currency {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* ===== Steps ===== */
+        .steps-row {
+            display: flex;
+            gap: 0;
+            padding: 20px 24px 0;
+        }
+
+        .step {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border-subtle);
+        }
+
+        .step-num {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--bg-card-alt);
+            border: 2px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.active .step-num {
+            background: var(--pix-green);
+            border-color: var(--pix-green);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(50,188,173,0.5);
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step.active .step-label { color: var(--pix-green); }
+
+        /* ===== QR Code Section ===== */
+        .qr-section {
+            padding: 28px 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .qr-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .qr-frame {
+            width: 240px; height: 240px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-qr);
+            background: #fff;
+            padding: 10px;
+            border: 2px solid var(--border-pix);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+
+        .qr-frame:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 8px rgba(50,188,173,0.15), 0 16px 50px rgba(0,0,0,0.7);
+        }
+
+        .qr-frame img {
+            width: 100%; height: 100%;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* Scanning animation overlay */
+        .qr-scan-line {
+            position: absolute;
+            top: 10px; left: 10px; right: 10px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--pix-green), transparent);
+            border-radius: 3px;
+            animation: scanLine 2.8s ease-in-out infinite;
+            opacity: 0.75;
+        }
+
+        @keyframes scanLine {
+            0%   { top: 10px; opacity: 0.75; }
+            50%  { top: calc(100% - 13px); opacity: 0.9; }
+            100% { top: 10px; opacity: 0.75; }
+        }
+
+        .qr-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qr-hint::before, .qr-hint::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+
+        /* ===== Divider ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 24px;
+        }
+
+        .divider hr {
+            flex: 1;
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .divider span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* ===== Pix Copy Code ===== */
+        .copy-section {
+            padding: 16px 24px;
+        }
+
+        .copy-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .copy-field-wrapper {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-pix);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+
+        .copy-field-wrapper:focus-within {
+            border-color: var(--pix-green);
+            box-shadow: 0 0 0 3px rgba(50,188,173,0.15);
+        }
+
+        .pix-code-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 12px 14px;
+            font-size: 0.78rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: var(--text-secondary);
+            cursor: text;
+            word-break: break-all;
+            min-height: 56px;
+            resize: none;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--pix-green), var(--pix-green-dark));
+            border: none;
+            cursor: pointer;
+            transition: background var(--transition), transform var(--transition);
+            min-width: 72px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(135deg, #3dd5c5, var(--pix-green));
+        }
+
+        .copy-btn:active {
+            transform: scale(0.97);
+        }
+
+        .copy-btn svg { width: 20px; height: 20px; fill: #fff; }
+
+        .copy-btn-text {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Tooltip copiado */
+        .copy-btn .copied-tooltip {
+            position: absolute;
+            inset: 0;
+            background: var(--pix-green-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+
+        .copy-btn.copied .copied-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .copied-tooltip svg { width: 20px; height: 20px; fill: #fff; }
+        .copied-tooltip span {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Demo Confirm Section ===== */
+        .demo-section {
+            padding: 16px 24px 28px;
+        }
+
+        .demo-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: var(--radius-sm);
+            margin-bottom: 14px;
+        }
+
+        .demo-info svg {
+            width: 16px; height: 16px;
+            fill: #818cf8;
+            flex-shrink: 0;
+        }
+
+        .demo-info p {
+            font-size: 0.78rem;
+            color: #a5b4fc;
+            line-height: 1.4;
+        }
+
+        .demo-info p strong {
+            color: #c7d2fe;
+            font-weight: 600;
+        }
+
+        .btn-confirm-demo {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-confirm-demo::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .btn-confirm-demo:hover::before { opacity: 1; }
+
+        .btn-confirm-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(99,102,241,0.5);
+        }
+
+        .btn-confirm-demo:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(99,102,241,0.3);
+        }
+
+        .btn-confirm-demo svg { width: 20px; height: 20px; fill: #fff; }
+
+        /* Loading state do botao */
+        .btn-confirm-demo.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-confirm-demo .btn-spinner {
+            display: none;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-confirm-demo.loading .btn-spinner { display: block; }
+        .btn-confirm-demo.loading .btn-icon    { display: none; }
+        .btn-confirm-demo.loading .btn-label   { opacity: 0.8; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== Footer ===== */
+        .page-footer {
+            margin-top: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-security {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-security svg { width: 13px; height: 13px; fill: var(--text-muted); }
+
+        .footer-brand {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== Status badge ===== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .status-badge.em-andamento {
+            background: rgba(251,191,36,0.12);
+            border: 1px solid rgba(251,191,36,0.3);
+            color: #fbbf24;
+        }
+
+        .status-badge.concluido {
+            background: var(--success-bg);
+            border: 1px solid var(--success-border);
+            color: var(--pix-green);
+        }
+
+        .status-badge .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.4; }
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 520px) {
+            body { padding: 24px 12px 40px; }
+            .qr-frame { width: 200px; height: 200px; }
+            .amount-value { font-size: 1.55rem; }
+            .pix-logo-text { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="pix-logo">
+            <div class="pix-logo-icon">
+                <!-- Icone Pix (losangos) -->
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.05 8.5a2.05 2.05 0 0 0-1.45-.6h-1.23l-3.01-3.01a2.05 2.05 0 0 0-2.9 0L7.43 7.9H6.4a2.05 2.05 0 0 0-1.45.6L2 11.45l2.95 2.95c.39.39.9.6 1.45.6h1.23l3.01 3.01a2.05 2.05 0 0 0 2.9 0l3.03-3.01h1.04a2.05 2.05 0 0 0 1.45-.6L22 11.45l-2.95-2.95ZM10.5 16.6l-2.59-2.6H6.4l-2.2-2.55 2.2-2.2h1.51l2.59-2.58a.47.47 0 0 1 .3-.14c.1 0 .2.05.3.14l2.59 2.59h1.51l2.2 2.19-2.2 2.55h-1.51l-2.6 2.6a.44.44 0 0 1-.59 0Z"/>
+                </svg>
+            </div>
+            <span class="pix-logo-text">Pix</span>
+        </div>
+        <p class="page-subtitle">Pagamento instantaneo seguro</p>
+    </header>
+
+    <!-- Main Card -->
+    <main class="payment-card" role="main">
+
+        <!-- Banner de sucesso (flash attribute) -->
+        <div th:if="${pagamentoConfirmado}" class="alert-success" role="alert" id="successAlert">
+            <div class="alert-icon">
+                <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5 1.41-1.41L9 14.17 18.59 4.59z"/></svg>
+            </div>
+            <div class="alert-text">
+                <strong>Pagamento confirmado!</strong>
+                <span th:text="${mensagem}">Venda concluida com sucesso.</span>
+            </div>
+        </div>
+
+        <!-- Informacoes do pedido -->
+        <div class="order-info">
+            <div>
+                <div class="order-label">Pedido</div>
+                <div class="order-id">#<span th:text="${pedidoId}">0</span></div>
+                <!-- Badge de status -->
+                <div th:if="${status == 'EM_ANDAMENTO'}" class="status-badge em-andamento" style="margin-top:6px">
+                    <span class="dot"></span> Aguardando pagamento
+                </div>
+                <div th:if="${status == 'CONCLUIDO'}" class="status-badge concluido" style="margin-top:6px">
+                    <span class="dot"></span> Pago
+                </div>
+            </div>
+            <div class="order-amount">
+                <div class="amount-value">
+                    R$&nbsp;<span th:text="${#numbers.formatDecimal(valorTotal, 1, 'POINT', 2, 'COMMA')}">0,00</span>
+                </div>
+                <div class="amount-currency">Reais brasileiros</div>
+            </div>
+        </div>
+
+        <!-- Steps de instrucao -->
+        <div class="steps-row">
+            <div class="step active">
+                <div class="step-num">1</div>
+                <div class="step-label">Abra o app</div>
+            </div>
+            <div class="step active">
+                <div class="step-num">2</div>
+                <div class="step-label">Escaneie</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-num">3</div>
+                <div class="step-label">Confirme</div>
+            </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-section">
+            <div class="qr-wrapper">
+                <div class="qr-frame">
+                    <img
+                        th:src="'data:image/png;base64,' + ${qrCodeBase64}"
+                        alt="QR Code Pix para pagamento do pedido"
+                        id="qrCodeImg"
+                        width="220"
+                        height="220"
+                    />
+                </div>
+                <div class="qr-scan-line" id="scanLine"></div>
+            </div>
+            <p class="qr-hint">ou use o codigo abaixo</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+            <hr/><span>Pix Copia e Cola</span><hr/>
+        </div>
+
+        <!-- Campo Copia e Cola + botao copiar -->
+        <div class="copy-section">
+            <div class="copy-label">Codigo Pix</div>
+            <div class="copy-field-wrapper">
+                <textarea
+                    id="pixCopiaCola"
+                    class="pix-code-input"
+                    th:text="${pixCopiaCola}"
+                    readonly
+                    rows="3"
+                    aria-label="Codigo Pix Copia e Cola"
+                ></textarea>
+                <button
+                    id="copyBtn"
+                    class="copy-btn"
+                    type="button"
+                    onclick="copiarCodigo()"
+                    aria-label="Copiar codigo Pix"
+                    title="Copiar codigo Pix"
+                >
+                    <!-- Icone padrao -->
+                    <svg id="copyIcon" viewBox="0 0 24 24">
+                        <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    <span class="copy-btn-text">Copiar</span>
+                    <!-- Tooltip copiado -->
+                    <div class="copied-tooltip">
+                        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5 1.41-1.41L9 14.17 18.59 4.59z"/></svg>
+                        <span>Copiado!</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Secao de confirmacao (modo apresentacao) -->
+        <div class="demo-section">
+            <div class="demo-info">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                </svg>
+                <p><strong>Modo Apresentacao:</strong> Use o botao abaixo para simular a confirmacao do pagamento sem realizar uma transacao real.</p>
+            </div>
+
+            <form
+                th:action="@{'/pagamento/pix/' + ${pedidoId} + '/confirmar-demo'}"
+                method="post"
+                id="confirmarForm"
+                onsubmit="ativarLoading()"
+            >
+                <button
+                    id="btnConfirmarDemo"
+                    class="btn-confirm-demo"
+                    type="submit"
+                    th:disabled="${status == 'CONCLUIDO'}"
+                >
+                    <span class="btn-spinner"></span>
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <span class="btn-label"
+                          th:text="${status == 'CONCLUIDO'} ? 'Pagamento ja Confirmado' : 'Confirmar Pagamento (Modo Apresentacao)'">
+                        Confirmar Pagamento (Modo Apresentacao)
+                    </span>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+        <div class="footer-security">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+            </svg>
+            Transacao protegida pelo Banco Central do Brasil
+        </div>
+        <div class="footer-brand">Cantina SENAI &mdash; Sistema de Pagamentos</div>
+    </footer>
+
+    <script>
+        /**
+         * Copia o codigo Pix Copia e Cola para a area de transferencia
+         * e exibe feedback visual no botao.
+         */
+        function copiarCodigo() {
+            const campo  = document.getElementById('pixCopiaCola');
+            const botao  = document.getElementById('copyBtn');
+
+            if (!campo || !botao) return;
+
+            // Tenta usar a API moderna de clipboard
+            const texto = campo.value || campo.textContent;
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(texto).then(() => exibirFeedbackCopia(botao));
+            } else {
+                // Fallback para navegadores mais antigos
+                campo.select();
+                document.execCommand('copy');
+                exibirFeedbackCopia(botao);
+            }
+        }
+
+        function exibirFeedbackCopia(botao) {
+            botao.classList.add('copied');
+            // Remove o estado apos 2 segundos
+            setTimeout(() => botao.classList.remove('copied'), 2000);
+        }
+
+        /**
+         * Ativa estado de loading no botao de confirmar pagamento.
+         */
+        function ativarLoading() {
+            const btn = document.getElementById('btnConfirmarDemo');
+            if (btn) {
+                btn.classList.add('loading');
+                // Ativa o step 3 visualmente
+                document.getElementById('step3')?.classList.add('active');
+                // Para a animacao do scanner (pagamento recebido)
+                const scanLine = document.getElementById('scanLine');
+                if (scanLine) scanLine.style.display = 'none';
+            }
+        }
+
+        // Se o pagamento ja foi confirmado, aplica estilos finais ao carregar
+        (function() {
+            const successAlert = document.getElementById('successAlert');
+            if (successAlert) {
+                document.getElementById('step3')?.classList.add('active');
+                const scanLine = document.getElementById('scanLine');
+                if (scanLine) scanLine.style.display = 'none';
+                // Scroll suave ate o alerta
+                successAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        })();
+    </script>
+
+</body>
+</html>

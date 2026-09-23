@@ -36,10 +36,7 @@ public class ProdutoRestController {
         this.estoqueRepository = estoqueRepository;
     }
 
-    /**
-     * GET /api/produtos
-     * Retorna lista de produtos com id, nome, preco, categoria e estoque atual.
-     */
+
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> listarTodos() {
         List<Map<String, Object>> result = produtoRepository.findAll().stream()
@@ -63,9 +60,6 @@ public class ProdutoRestController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * GET /api/produtos/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> buscarPorId(@PathVariable Long id) {
         return produtoRepository.findById(id)
@@ -87,10 +81,6 @@ public class ProdutoRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * POST /api/produtos
-     * Body: { "nome": "Coxinha", "idCategoria": 1, "preco": 6.50 }
-     */
     @PostMapping
     public ResponseEntity<?> cadastrar(@RequestBody Map<String, Object> body) {
         String nome = (String) body.get("nome");
@@ -123,10 +113,6 @@ public class ProdutoRestController {
         }
     }
 
-    /**
-     * PUT /api/produtos/{id}
-     * Body: { "nome": "Coxinha Assada", "idCategoria": 1, "preco": 7.00 }
-     */
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Map<String, Object> body) {
         String nome = (String) body.get("nome");
@@ -153,11 +139,16 @@ public class ProdutoRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * DELETE /api/produtos/{id}
-     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+    public ResponseEntity<?> excluir(@PathVariable Long id) {
+        if (!produtoRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        if (estoqueRepository.findByProdutoId(id).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("erro",
+                        "Não é possível excluir: produto possui estoque cadastrado. Zere o estoque antes de excluir."));
+        }
         produtoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

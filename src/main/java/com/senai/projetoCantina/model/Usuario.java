@@ -3,6 +3,8 @@ package com.senai.projetoCantina.model;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -11,8 +13,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 
+@Entity
+@Table(name = "usuario")
 public class Usuario {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +30,8 @@ public class Usuario {
     @Column(nullable = false, length = 255)
     private String senha;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM('admin','operador') DEFAULT 'operador'")
+    @Convert(converter = PerfilConverter.class)
+    @Column(nullable = false)
     private Perfil perfil = Perfil.OPERADOR;
 
     @Column(name = "ativo", columnDefinition = "TINYINT(1) DEFAULT 1")
@@ -35,6 +40,19 @@ public class Usuario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_funcionario")
     private Funcionario funcionario;
+
+    @Column(length = 100)
+    private String nome;
+
+    @Column(length = 100, unique = true)
+    private String email;
+
+    @Column(length = 50)
+    private String matricula;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_usuario", length = 30)
+    private TipoUsuario tipoUsuario;
     
     public Usuario() {
     	
@@ -83,6 +101,30 @@ public class Usuario {
 	public void setFuncionario(Funcionario funcionario) {
 		this.funcionario = funcionario;
 	}
+	public String getNome() {
+		return nome;
+	}
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMatricula() {
+		return matricula;
+	}
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+	public TipoUsuario getTipoUsuario() {
+		return tipoUsuario;
+	}
+	public void setTipoUsuario(TipoUsuario tipoUsuario) {
+		this.tipoUsuario = tipoUsuario;
+	}
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,5 +141,12 @@ public class Usuario {
     public enum Perfil {
         ADMIN,
         OPERADOR
+    }
+
+    public enum TipoUsuario {
+        ALUNO,
+        PROFESSOR,
+        FUNCIONARIO_GERAL,
+        ADMINISTRADOR_CANTINA
     }
 }

@@ -22,8 +22,8 @@ public class Venda {
     @Column(name = "valor_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal valorTotal = BigDecimal.ZERO;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Convert(converter = StatusVendaConverter.class)
+    @Column(name = "status", nullable = false, length = 50)
     private StatusVenda status = StatusVenda.EM_ANDAMENTO;
 
     @Column(name = "id_cliente")
@@ -50,7 +50,6 @@ public class Venda {
         this.idFuncionario = idFuncionario;
     }
 
-    // Métodos Utilitários
     public void adicionarItem(ItemVenda item) {
         itens.add(item);
         item.setVenda(this);

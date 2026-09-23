@@ -7,5 +7,5 @@ import com.senai.projetoCantina.model.TipoCliente;
 
 @Repository
 public interface TipoClienteRepository extends JpaRepository<TipoCliente, Long> {
-    Optional<TipoCliente> findByDescricao(String descricao);
+    Optional<TipoCliente> findByNome(String nome);
 }

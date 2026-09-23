@@ -6,11 +6,12 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "tb_tipo_cliente")
+@Table(name = "tipo_cliente")
 public class TipoCliente {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_tipo_cliente")
 	private Long id;
 	
 	@Column(nullable = false, unique = true, length = 50)
