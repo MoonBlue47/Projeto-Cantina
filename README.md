@@ -3,6 +3,14 @@
 Sistema de autoatendimento e retaguarda desenvolvido para cantinas escolares, com arquitetura dividida em uma API RESTful em **Java / Spring Boot** e uma interface interativa em **HTML5, CSS3 e JavaScript Vanilla**.
 
 ---
+## 🌿 Estrutura de Branches do Repositório
+
+O projeto está dividido em duas branches para evidenciar a sua evolução arquitetural e visual:
+
+* **`main` (Versão 1.0):** Versão inicial focada no fluxo essencial da aplicação, com interface estática Vanilla JS simples, integração RESTful direta e endpoints de gestão básica.
+* **`v2-frontend-ia-pix` (Versão 1.4):** Versão atualizada com redesign completo (*Split Layout*), controlo dinâmico de stock no quiosque, painel administrativo expandido e módulo de pagamento instantâneo via Pix com Thymeleaf.
+
+---
 
 ## 📌 Visão Geral da Versão 1
 
