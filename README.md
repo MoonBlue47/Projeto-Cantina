@@ -1,15 +1,16 @@
-# 🥪 Sistema de Gestão de Cantina Escolar (Versão 1.0)
+# 🥪 Sistema de Gestão de Cantina Escolar (Versão 1.4 - Modern UI & Fluxo Pix)
 
-Sistema de autoatendimento e retaguarda desenvolvido para cantinas escolares, com arquitetura dividida em uma API RESTful em **Java / Spring Boot** e uma interface interativa em **HTML5, CSS3 e JavaScript Vanilla**.
+Evolução do sistema de gestão e autoatendimento para cantinas escolares. Esta versão traz uma reformulação visual completa com **Split Layout**, integração com motor de templates **Thymeleaf**, controle visual de estoque em tempo real e módulo de pagamento instantâneo via **Pix**.
 
 ---
 
-## 📌 Visão Geral da Versão 1
+## 🚀 Novidades da Versão 1.4
 
-A primeira versão foca no fluxo essencial de atendimento e gestão básica de itens:
-* **Totem de Autoatendimento:** Identificação de aluno via matrícula, listagem dinâmica de produtos categorizados, montagem de bandeja e registro do pedido.
-* **Painel Administrativo:** Autenticação de operadores/administradores e módulo para cadastro e visualização de produtos sincronizados com a base de dados.
-* **Backend Integrado:** Endpoints REST documentados para produtos, autenticação, verificação de clientes e persistência de vendas no MySQL.
+* **Identidade Visual Aprimorada:** Design moderno construído com a paleta institucional (azul tecnológico, tons neutros suaves e detalhes em vermelho vibrante), tipografia *Outfit* e layout responsivo.
+* **Split Layout:** Telas de entrada (`index.html`, `totem-login.html`, `admin-login.html` e `cadastro.html`) com divisão de tela moderna para desktop e adaptação fluida para dispositivos móveis.
+* **Controle de Estoque no Totem:** Badges em tempo real indicando itens disponíveis e desativação automática de botões de compra para produtos sem estoque.
+* **Painel Administrativo Completo:** Gestão modular expandida com abas para Pedidos, Produtos, Categorias, Clientes, Tipos de Cliente, Funcionários, Fornecedores, Formas de Pagamento, Estoque e Usuários.
+* **Módulo de Pagamento Pix:** Interface dedicada (`pagamento-pix.html`) com renderização dinâmica via Thymeleaf, exibindo valor, QR Code, código Copia e Cola com feedback na área de transferência e modo de confirmação de demonstração.
 
 ---
 
@@ -17,32 +18,33 @@ A primeira versão foca no fluxo essencial de atendimento e gestão básica de i
 
 ### Backend
 * **Java 17+**
-* **Spring Boot** (Spring Web, Spring Data JPA, Spring Security)
-* **MySQL** (Persistência relacional)
-* **Maven** (Gerenciador de dependências)
+* **Spring Boot** (Spring MVC, Spring Data JPA, Spring Security)
+* **Thymeleaf** (Renderização server-side da tela de pagamento Pix)
+* **MySQL** (Persistência relacional de produtos, usuários e vendas)
+* **Maven** (Gerenciamento de dependências e build)
 
 ### Frontend
-* **HTML5 semântico**
-* **CSS3 moderno** (Variáveis nativas, Flexbox, Grid e layout responsivo para totens touchscreen)
-* **JavaScript (ES6+) Vanilla** (Comunicação assíncrona via `fetch`, manipulação do DOM e proteção contra injeções de script)
+* **HTML5 semântico** e **Thymeleaf View Engine**
+* **CSS3 moderno** (Variáveis customizadas, Flexbox, Grid e animações de feedback)
+* **JavaScript ES6+ Vanilla** (Requisições assíncronas via `fetch` relativas, controle de sessão via `localStorage` e prevenção contra XSS)
 
 ---
 
-## 📂 Estrutura do Projeto
+## 📂 Estrutura de Pastas
 
 ```text
-projeto-cantina/
+projeto-cantina-1.4/
 ├── src/
 │   ├── main/
 │   │   ├── java/com/senai/projetoCantina/
-│   │   │   ├── config/          # Configurações de segurança, CORS e carga inicial
-│   │   │   ├── controller/      # Endpoints REST (/api/produtos, /api/vendas, etc.)
-│   │   │   ├── dto/             # Objetos de transferência de dados (VendaRequest, Item, etc.)
-│   │   │   ├── model/           # Entidades JPA (Produto, Categoria, Cliente, Venda)
-│   │   │   ├── repository/      # Interfaces Spring Data JPA
+│   │   │   ├── config/          # SecurityConfig, DataConfiguration e DataInitializer
+│   │   │   ├── controller/      # RestControllers (/api/**) e PagamentoPixController
+│   │   │   ├── dto/             # VendaRequestDto, ItemVendaDto, FormaPagamentoDto, etc.
+│   │   │   ├── model/           # Entidades JPA (Produto, Categoria, Estoque, Venda, etc.)
+│   │   │   ├── repository/      # Interfaces de persistência Spring Data
 │   │   │   └── service/         # Regras de negócio e movimentação de estoque
 │   │   └── resources/
-│   │       ├── static/          # Frontend da Versão 1 (arquivos estáticos)
+│   │       ├── static/          # Frontend estático (SPA / Vanilla)
 │   │       │   ├── css/
 │   │       │   │   └── styles.css
 │   │       │   ├── js/
@@ -51,10 +53,13 @@ projeto-cantina/
 │   │       │   │   └── totem.js
 │   │       │   ├── admin-dashboard.html
 │   │       │   ├── admin-login.html
+│   │       │   ├── cadastro.html
 │   │       │   ├── index.html
 │   │       │   ├── totem-login.html
 │   │       │   ├── totem-menu.html
 │   │       │   └── totem-sucesso.html
+│   │       ├── templates/       # Templates processados pelo servidor (Thymeleaf)
+│   │       │   └── pagamento-pix.html
 │   │       └── application.properties
 └── pom.xml
 ````
@@ -66,16 +71,15 @@ projeto-cantina/
 ### 1.Pré-requisitos
 * **JDK 17** ou superior instalado
 * **MySQL Server** ativo localmente na porta padrão (3306)
-* **Git** instalado.
+* **Git** instalado -> Branch selecionada: Atualizado
 
 ### 2. Configuração do Banco de Dados
-Certifique-se de que as credenciais em src/main/resources/application.properties (ou na classe DataConfiguration.java) correspondam ao seu ambiente MySQL local:
+Verifique os parâmetros de conexão no arquivo application.properties ou na classe DataConfiguration.java:
 
 ```text
 spring.datasource.url=jdbc:mysql://localhost:3306/cantina_final?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=sua_senha_aqui
-spring.jpa.hibernate.ddl-auto=update
 ````
 
 ### 3. Rodando a Aplicação
@@ -89,3 +93,12 @@ No terminal, a partir da raiz do projeto:
 ./mvnw spring-boot:run
 ````
 A aplicação estará acessível em: http://localhost:8080/index.html
+
+---
+
+## 💳 Fluxo de Demonstração do Pedido e Pix
+* Acesso do Aluno: No menu inicial, clique em Totem Aluno e insira a matrícula padrão 1001 (gerada pelo DataInitializer).
+* Escolha de Produtos: Navegue pelas categorias e adicione os itens à bandeja (o sistema bloqueia adição acima da quantidade em estoque).
+* Seleção de Pagamento: Clique em Finalizar Pedido e escolha Pix.
+* Tela de Cobrança: Você será direcionado para o template do Pix, com valor atualizado e código Copia e Cola.
+* Confirmação: Utilize o botão Confirmar Pagamento (Modo Apresentação) para simular a liquidação imediata da venda no sistema.
