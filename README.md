@@ -1,68 +1,91 @@
-# 🏪 Projeto Cantina — Sistema de Gestão e Autoatendimento
+# 🥪 Sistema de Gestão de Cantina Escolar (Versão 1.0)
 
-> Solução full-stack para gestão escolar/comercial de cantinas, integrando totem de autoatendimento ao cliente, painel administrativo e API REST em Java com arquitetura em camadas.
-
----
-
-## 🎯 Sobre o Projeto
-
-O **Projeto Cantina** automatiza o fluxo de vendas e controle de estoque de uma cantina, eliminando filas no atendimento manual e garantindo consistência financeira. 
-
-O sistema opera em dois fluxos integrados:
-* **Totem de Autoatendimento:** Interface intuitiva para autenticação, seleção de itens no cardápio e confirmação imediata do pedido.
-* **Painel Administrativo:** Gestão centralizada de produtos, reposição de estoque, categorias e controle de pedidos efetuados.
+Sistema de autoatendimento e retaguarda desenvolvido para cantinas escolares, com arquitetura dividida em uma API RESTful em **Java / Spring Boot** e uma interface interativa em **HTML5, CSS3 e JavaScript Vanilla**.
 
 ---
 
-## 🛠️ Tecnologias & Ferramentas
+## 📌 Visão Geral da Versão 1
 
-| Camada | Tecnologias |
-| :--- | :--- |
-| **Back-end** | Java 21, Spring Boot (Spring Web, Spring Data JPA, Bean Validation) |
-| **Banco de Dados** | MySQL (Modelagem via MySQL Workbench) |
-| **Front-end** | HTML5, CSS3, JavaScript (Vanilla com consumo de API REST) |
-| **Build & Testes** | Maven, JUnit 5 |
+A primeira versão foca no fluxo essencial de atendimento e gestão básica de itens:
+* **Totem de Autoatendimento:** Identificação de aluno via matrícula, listagem dinâmica de produtos categorizados, montagem de bandeja e registro do pedido.
+* **Painel Administrativo:** Autenticação de operadores/administradores e módulo para cadastro e visualização de produtos sincronizados com a base de dados.
+* **Backend Integrado:** Endpoints REST documentados para produtos, autenticação, verificação de clientes e persistência de vendas no MySQL.
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 🛠️ Tecnologias Utilizadas
 
-O back-end segue o padrão arquitetural em camadas para separação estrita de responsabilidades:
+### Backend
+* **Java 17+**
+* **Spring Boot** (Spring Web, Spring Data JPA, Spring Security)
+* **MySQL** (Persistência relacional)
+* **Maven** (Gerenciador de dependências)
 
-* `controller/`: Mapeamento das rotas HTTP e endpoints da API REST.
-* `service/`: Regras de negócio, cálculos de estoque e processamento de pedidos.
-* `repository/`: Camada de persistência e consultas ao MySQL via Spring Data JPA.
-* `model/`: Entidades de banco de dados mapeadas via ORM.
-* `dto/`: Transferência desacoplada de dados entre requisições e respostas.
-* `exception/`: Tratamento centralizado de exceções e erros de validação.
-* `config/`: Configurações de CORS, conexão e segurança.
+### Frontend
+* **HTML5 semântico**
+* **CSS3 moderno** (Variáveis nativas, Flexbox, Grid e layout responsivo para totens touchscreen)
+* **JavaScript (ES6+) Vanilla** (Comunicação assíncrona via `fetch`, manipulação do DOM e proteção contra injeções de script)
 
 ---
 
-## 📁 Estrutura de Diretórios
+## 📂 Estrutura do Projeto
 
 ```text
-├── frontend/
-│   ├── css/styles.css           # Identidade visual e responsividade
-│   ├── js/
-│   │   ├── api.js               # Camada de comunicação fetch com o back-end
-│   │   ├── admin.js             # Lógica e renderização do painel admin
-│   │   └── totem.js             # Lógica do fluxo de autoatendimento
-│   ├── admin-dashboard.html     # Painel de controle do operador
-│   ├── admin-login.html         # Acesso restrito
-│   ├── totem-menu.html          # Cardápio interativo
-│   └── totem-sucesso.html       # Confirmação de pedido
+projeto-cantina/
 ├── src/
-│   ├── main/java/com/senai/projetoCantina/ # Código-fonte da aplicação
-│   └── resources/               # Propriedades da aplicação e credenciais
-└── pom.xml                      # Dependências do projeto Maven
-
+│   ├── main/
+│   │   ├── java/com/senai/projetoCantina/
+│   │   │   ├── config/          # Configurações de segurança, CORS e carga inicial
+│   │   │   ├── controller/      # Endpoints REST (/api/produtos, /api/vendas, etc.)
+│   │   │   ├── dto/             # Objetos de transferência de dados (VendaRequest, Item, etc.)
+│   │   │   ├── model/           # Entidades JPA (Produto, Categoria, Cliente, Venda)
+│   │   │   ├── repository/      # Interfaces Spring Data JPA
+│   │   │   └── service/         # Regras de negócio e movimentação de estoque
+│   │   └── resources/
+│   │       ├── static/          # Frontend da Versão 1 (arquivos estáticos)
+│   │       │   ├── css/
+│   │       │   │   └── styles.css
+│   │       │   ├── js/
+│   │       │   │   ├── api.js
+│   │       │   │   ├── admin.js
+│   │       │   │   └── totem.js
+│   │       │   ├── admin-dashboard.html
+│   │       │   ├── admin-login.html
+│   │       │   ├── index.html
+│   │       │   ├── totem-login.html
+│   │       │   ├── totem-menu.html
+│   │       │   └── totem-sucesso.html
+│   │       └── application.properties
+└── pom.xml
 ````
+
 ---
 
-## 🚀 Como Executar Localmente
+## Como Executar o Projeto
 
-Pré-requisitos
+### 1.Pré-requisitos
+* **JDK 17** ou superior instalado
+* **MySQL Server** ativo localmente na porta padrão (3306)
+* **Git** instalado.
 
-* Java **JDK 21** instaldo
-* Servidor **MySQL** rodando localmente
+### 2. Configuração do Banco de Dados
+Certifique-se de que as credenciais em src/main/resources/application.properties (ou na classe DataConfiguration.java) correspondam ao seu ambiente MySQL local:
+
+```text
+spring.datasource.url=jdbc:mysql://localhost:3306/cantina_final?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=sua_senha_aqui
+spring.jpa.hibernate.ddl-auto=update
+````
+
+### 3. Rodando a Aplicação
+No terminal, a partir da raiz do projeto:
+
+```text
+# Limpar e compilar o projeto
+./mvnw clean package
+
+# Iniciar o servidor Spring Boot
+./mvnw spring-boot:run
+````
+A aplicação estará acessível em: http://localhost:8080/index.html
