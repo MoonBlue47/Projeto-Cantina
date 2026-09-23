@@ -3,6 +3,13 @@
 Evolução do sistema de gestão e autoatendimento para cantinas escolares. Esta versão traz uma reformulação visual completa com **Split Layout**, integração com motor de templates **Thymeleaf**, controle visual de estoque em tempo real e módulo de pagamento instantâneo via **Pix**.
 
 ---
+## 🌿 Estrutura de Branches do Repositório
+
+O projeto está dividido em duas branches para evidenciar a sua evolução arquitetural e visual:
+
+* **`main` (Versão 1.0):** Versão inicial focada no fluxo essencial da aplicação, com interface estática Vanilla JS simples, integração RESTful direta e endpoints de gestão básica.
+* **`v2-frontend-ia-pix` (Versão 1.4):** Versão atualizada com redesign completo (*Split Layout*), controlo dinâmico de stock no quiosque, painel administrativo expandido e módulo de pagamento instantâneo via Pix com Thymeleaf.
+---
 
 ## 🚀 Novidades da Versão 1.4
 
